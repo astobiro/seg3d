@@ -1,3 +1,5 @@
+from tensorflow.keras.utils import Sequence
+
 #custom generator
 class VolumeDataGenerator(Sequence):
     def __init__(self,

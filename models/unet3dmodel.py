@@ -41,7 +41,7 @@ from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
 class Unet3Dmodel:
     def __init__(self, config):
         K.set_image_data_format("channels_last")
-        self.config = config
+        self.config = Params(config)
         self.resultpath = self.check_results_path()
         # self.dataset = dataset
         # self.metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]

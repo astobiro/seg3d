@@ -1,6 +1,7 @@
 from models.unet3dmodel import Unet3Dmodel
 from generators.data_loader import VolumeDataGenerator	
 import sys
+from utils.utils import Params
 
 SRC_ABSOLUTE_PATH = "."
 sys.path.append(SRC_ABSOLUTE_PATH)
