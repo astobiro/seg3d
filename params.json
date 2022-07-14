@@ -2,8 +2,9 @@
 	"BATCH_SIZE" : 5,
 	"LR" :  0.001,
 	"EPOCHS" : 40,
-	"INPUT_SHAPE": [160,160,16,4],
+	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
+	"TESTNO" : "n1",
 
     "TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME" : "LUNA16/training_subvolumes_axial.csv",
     "VALIDATION_LIST_SUBVOLUMES_AXIAL_FILENAME" : "LUNA16/validation_subvolumes_axial.csv",
@@ -27,6 +28,5 @@
 	"PRE_TRAINED_DICEGRAPH_FILE" : "LUNA16/dicegraph.png",
 
 	"segmentation_name_map" : ["Background", "SuperiorLeft", "SuperiorRight", "Middle", "LowerRight", "LowerLeft"],
-	// "segmentation_color_map" : [[0,0,0.5],[144/255,238/255,144/255],[110/255,184/255,209/255],[219/255,82/255,66/255],[221/255,130/255,101/255],[174/255,72/255,58/255]],
 	"segmentation_labels_map" : [0, 7, 4, 5, 6, 8]
 }

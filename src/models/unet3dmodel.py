@@ -32,11 +32,12 @@ from tensorflow.keras.models import Model
 from tensorflow.keras import Input
 from tensorflow.keras.layers import Conv3D, PReLU, UpSampling3D, concatenate , Reshape, Dense, Permute, MaxPool3D
 from tensorflow.keras.layers import GlobalAveragePooling2D, Activation, add, GaussianNoise, BatchNormalization, multiply
-from tensorflow.keras.optimizers import SGD
 import pandas as pd
 import re
 from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
 #from loss import custom_loss
+from utils.utils import Params
+from pprint import pprint
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -45,7 +46,7 @@ class Unet3Dmodel:
         self.resultpath = self.check_results_path()
         # self.dataset = dataset
         # self.metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
-        self.optim = keras.optimizers.Adam(self.config.LR)
+        self.optim = Adam(self.config.LR)
         # self.preprocess_input = self.preprocess_inputInit()
         self.model = self.modelInit()
         # self.dice_loss = sm.losses.DiceLoss()
@@ -56,14 +57,14 @@ class Unet3Dmodel:
         return
 
     def check_results_path(self):
-        resultpath = "data/results/" + self.config.TESTNO + "/"
+        resultpath = "seg3d/data/results/" + self.config.TESTNO + "/"
         if not os.path.exists(resultpath):
             os.mkdir(resultpath)
         return resultpath
 
     def modelInit(self):
-        input_shape = (self.config.INPUT_SHAPE[0], self.config.INPUT_SHAPE[1], self.config.INPUT_SHAPE[2], self.config.INPUT_SHAPE[3]) 
-        model = my_unet3D(input_shape=input_shape, output_channels=6)
+        input_shape = tuple(self.config.INPUT_SHAPE)
+        model = self.my_unet3D(input_shape = input_shape, output_channels = 6)
         model_to_df(model)
         return model
 
@@ -99,7 +100,7 @@ class Unet3Dmodel:
         learning_rate = self.config.LEARNING_RATE
         loss_function = self.total_loss
 
-        target_dim = (self.config.TARGET_DIM[0], self.config.TARGET_DIM[1], self.config.TARGET_DIM[2])
+        target_dim = tuple(self.config.TARGET_DIM)
         batch_size = self.config.BATCH_SIZE
 
         sgd = SGD(learning_rate=learning_rate, momentum=0.9, decay=0)
@@ -176,7 +177,7 @@ class Unet3Dmodel:
         dice_score = (2.0 * K.sum(intersection) + err) / (K.sum(y_true) + K.sum(y_pred) + err)
         return dice_score
 
-    def my_unet3D(input_shape=(160,160,16,4),output_channels=4):
+    def my_unet3D(self, input_shape=(160,160,16,4),output_channels=4):
         
         input_layer = Input(shape=input_shape, name='the_input_layer')
         
@@ -234,7 +235,7 @@ class Unet3Dmodel:
         
         return out_model
 
-    def model_to_df(model):
+    def model_to_df(self, model):
         def clean(x):
             return x.replace('[0][0]','').replace('(','').replace(')','').replace('[','').replace(']','')
 

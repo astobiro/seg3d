@@ -1,7 +1,8 @@
 from models.unet3dmodel import Unet3Dmodel
 from generators.data_loader import VolumeDataGenerator	
-import sys
+import sys, os
 from utils.utils import Params
+from pprint import pprint
 
 SRC_ABSOLUTE_PATH = "."
 sys.path.append(SRC_ABSOLUTE_PATH)
@@ -9,7 +10,6 @@ sys.path.append(SRC_ABSOLUTE_PATH)
 def main():
 	args = sys.argv
 	print(args[1])
-	
 	try:
 		# Capture the command line arguments from the interface script.
 		args = sys.argv
