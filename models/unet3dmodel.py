@@ -27,7 +27,6 @@ from tensorflow.keras.losses import categorical_crossentropy
 from tensorflow.keras.models import load_model
 import skimage.io as io
 import nrrd
-from keras_buoy.models import ResumableModel
 import tensorflow.keras.backend as K
 from tensorflow.keras.models import Model
 from tensorflow.keras import Input
@@ -63,7 +62,9 @@ class Unet3Dmodel:
         return resultpath
 
     def modelInit(self):
+        input_shape = (self.config.INPUT_SHAPE[0], self.config.INPUT_SHAPE[1], self.config.INPUT_SHAPE[2], self.config.INPUT_SHAPE[3]) 
         model = my_unet3D(input_shape=input_shape, output_channels=6)
+        model_to_df(model)
         return model
 
     def callbacksInit(self):
@@ -84,9 +85,13 @@ class Unet3Dmodel:
         validation_list_subvolumes = load_csv_list(self.config.VALIDATION_LIST_SUBVOLUMES_AXIAL_FILENAME)
         test_list_subvolumes = load_csv_list(self.config.TEST_LIST_SUBVOLUMES_AXIAL_FILENAME)
 
-        train_gen = VolumeDataGenerator(training_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, verbose=0)
-        val_gen = VolumeDataGenerator(validation_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
-        test_gen = VolumeDataGenerator(test_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
+        label_ids = self.config.segmentation_labels_map
+        img_suff = self.config.IMAGE_SUFFIX
+        seg_suff = self.config.SEG_SUFFIX
+
+        train_gen = VolumeDataGenerator(training_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, verbose=0, label_ids = label_ids, image_suffix = img_suff, seg_suffix = seg_suff)
+        val_gen = VolumeDataGenerator(validation_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0, label_ids = label_ids, image_suffix = img_suff, seg_suffix = seg_suff)
+        test_gen = VolumeDataGenerator(test_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0, label_ids = label_ids, image_suffix = img_suff, seg_suffix = seg_suff)
 
         return train_gen, val_gen, test_gen
 
@@ -94,7 +99,7 @@ class Unet3Dmodel:
         learning_rate = self.config.LEARNING_RATE
         loss_function = self.total_loss
 
-        target_dim = (160,160,16)
+        target_dim = (self.config.TARGET_DIM[0], self.config.TARGET_DIM[1], self.config.TARGET_DIM[2])
         batch_size = self.config.BATCH_SIZE
 
         sgd = SGD(learning_rate=learning_rate, momentum=0.9, decay=0)
@@ -104,7 +109,7 @@ class Unet3Dmodel:
 
     def fit_model(self):
         init = time.time()
-        history = self.model.fit(self.train_gen, epochs=50, validation_data = self.val_gen, callbacks = custom_callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
+        history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = custom_callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
         end = time.time()
         print("Training time (secs): {}".format(end-init))
         history = self.model.history
@@ -119,7 +124,7 @@ class Unet3Dmodel:
         plt.title("Training")
         plt.legend()
         #plt.show()
-        plt.savefig(TRAINING_OUTPUT_LOSSGRAPH_FILE)
+        plt.savefig(self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
 
         plt.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
         plt.plot(hist_log_df['val_measureDICE'],color='r',label='validation DICE')
@@ -128,7 +133,7 @@ class Unet3Dmodel:
         plt.title("Training")
         plt.legend()
         #plt.show()
-        plt.savefig(TRAINING_OUTPUT_DICEGRAPH_FILE)
+        plt.savefig(self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
 
         return
 
@@ -265,7 +270,9 @@ class Unet3Dmodel:
                             header[3] : [clean(e) for e in entry[3:]]}
         #df['layername'],df['type'] = zip(*df['Layer (type)'].map(magic))
         #df['kernels'] = [e[-1:][0] for e in df['Output Shape']]
-        return df
+        df.to_csv(self.config.MODEL_SUMMARY_DF_FILE)
+
+        return
 
     def get_full_filenames(name,image_folder,seg_folder):
         image_full_filename = os.path.join(image_folder,name+".mhd")

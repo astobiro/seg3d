@@ -6,10 +6,10 @@ class VolumeDataGenerator(Sequence):
                  batch_size=1,
                  shuffle=True,
                  dim=(160,160,16),
-                 label_ids=segmentation_labels_map,
+                 label_ids=[],
                  verbose=1,
-                 image_suffix = IMAGE_SUFFIX, 
-                 seg_suffix = SEG_SUFFIX):
+                 image_suffix = "", 
+                 seg_suffix = ""):
         
         self.name_list = name_list
         self.image_folder = image_folder
