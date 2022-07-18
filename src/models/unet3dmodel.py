@@ -290,7 +290,7 @@ class Unet3Dmodel:
         return specificity
 
     def evaluate_model_per_patient(self,n_steps=None,shuffle=False):
-        pred_list = load_csv_list(self.config.TEST_LIST_SUBVOLUMES_AXIAL_FILENAME)
+        pred_list = load_csv_list(self.config.TEST_LIST_FILENAME)
         datagen = self.test_gen
         # pred_gen = VolumeDataGenerator(validation_list_subvolumes, SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
         n_pred = len(datagen)
