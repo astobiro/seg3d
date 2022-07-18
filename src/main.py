@@ -27,7 +27,7 @@ def main():
 		# Parse the configuration parameters for the ConvNet Model.
 		config = args[1]
 		try:
-			load = args[2]
+			load = int(args[2])
 		except:
 			load = 0
 
