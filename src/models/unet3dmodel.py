@@ -339,6 +339,7 @@ class Unet3Dmodel:
                     specifities[indexer[raw_id]][k] += measureSpecifity(gt_mask, pred_mask)
                 count[indexer[raw_id]]+=1
         # calculate the final metric
+        average_metrics = ["IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0]]
         for i in range(len(pred_list)):
             ious[indexer[pred_list[i]]] = ious[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             dices[indexer[pred_list[i]]] = dices[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
@@ -352,9 +353,23 @@ class Unet3Dmodel:
                 this_dict.loc[pos, "DICE"] = float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "Sensitivity"] = float("{0:.4f}".format(sensitivities[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "Specificity"] = float("{0:.4f}".format(specifities[indexer[pred_list[i]]][j]))
+                average_metrics["IoU"][j] += float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
+                average_metrics["DICE"][j] += float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
+        for i in range(len(average_metrics["IoU"])):
+            average_metrics["IoU"][i] = average_metrics["IoU"][i] / len(pred_list)
+            average_metrics["DICE"][i] = average_metrics["DICE"][i] / len(pred_list)
         
-        this_dict.to_csv(self.resultpath + self.config.EVAL_DF)
+        this_dict.to_csv(self.resultpath + self.config.EVAL_DF + ".csv")
         
+        average_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
+        average_starting = self.config.segmentation_name_map
+        average_dict = pd.DataFrame(average_dict, index=average_starting)
+        for i in range(len(average_metrics["IoU"])):
+            average_dict.pos[self.config.segmentation_name_map[average_metrics["IoU"][i]], "IoU"] = average_metrics["IoU"][i]
+            average_dict.pos[self.config.segmentation_name_map[average_metrics["DICE"][i]], "DICE"] = average_metrics["DICE"][i]
+
+        average_dict.to_csv(self.resultpath + self.config.EVAL_DF + "-average.csv")
+
         return
 
     def save_masks(val_gen, model):
