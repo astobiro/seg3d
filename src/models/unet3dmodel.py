@@ -111,7 +111,7 @@ class Unet3Dmodel:
         target_dim = tuple(self.config.TARGET_DIM)
         batch_size = self.config.BATCH_SIZE
 
-        sgd = SGD(learning_rate=learning_rate, momentum=0.9, decay=0)
+        sgd = SGD(learning_rate=learning_rate, momentum=0.9, decay=0, clipnorm=1.0)
         self.model.compile(optimizer=sgd, loss=loss_function, metrics=[measureDICE]) 
 
         return
