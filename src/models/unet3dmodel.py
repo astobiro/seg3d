@@ -302,14 +302,14 @@ class Unet3Dmodel:
         for i in range(len(pred_list)):
             pred_list[i] = str(pred_list[i])
         starting = []
-        for i in range(len(segmentation_name_map)):
-            starting.append(str(pred_list[0] + "_" + segmentation_name_map[i]))
+        for i in range(len(self.config.segmentation_name_map)):
+            starting.append(str(pred_list[0] + "_" + self.config.segmentation_name_map[i]))
         this_dict = pd.DataFrame(this_dict, index=starting)
 
         for i in range(1, len(pred_list)):
             starting = []
-            for j in range(len(segmentation_name_map)):
-                starting.append(str(pred_list[i] + "_" + segmentation_name_map[j]))
+            for j in range(len(self.config.segmentation_name_map)):
+                starting.append(str(pred_list[i] + "_" + self.config.segmentation_name_map[j]))
             y_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
             x_dict = pd.DataFrame(y_dict, index=starting)
             this_dict = this_dict.append(x_dict)
@@ -317,10 +317,10 @@ class Unet3Dmodel:
         # index ids to numbers
         indexer = res = {val : idx for idx, val in enumerate(pred_list)}
         # create dictionary to save values for each id
-        ious = np.zeros((len(indexer), len(segmentation_name_map)))
-        dices = np.zeros((len(indexer), len(segmentation_name_map)))
-        sensitivities = np.zeros((len(indexer), len(segmentation_name_map)))
-        specifities = np.zeros((len(indexer), len(segmentation_name_map)))
+        ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
+        dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
+        sensitivities = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
+        specifities = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         # calculate metrics per id
         count = np.zeros(len(indexer))
         for i in range(n_pred):
@@ -345,8 +345,8 @@ class Unet3Dmodel:
             sensitivities[indexer[pred_list[i]]] = sensitivities[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             specifities[indexer[pred_list[i]]] = specifities[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             # put metrics into dataframe
-            for j in range(len(segmentation_name_map)):
-                pos = str(pred_list[i] + "_" + segmentation_name_map[j])
+            for j in range(len(self.config.segmentation_name_map)):
+                pos = str(pred_list[i] + "_" + self.config.segmentation_name_map[j])
                 # float("{0:.4f}".format(x))
                 this_dict.loc[pos, "IoU"] = float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "DICE"] = float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
@@ -396,8 +396,8 @@ class Unet3Dmodel:
                         mask = prob_map > 0.5
                         mask_Y = prob_map > 0.5
                         # print(local_X.shape, mask_X.shape)
-                        local[mask] = segmentation_labels_map[m]
-                        local_Y[mask_Y] = segmentation_labels_map[m]
+                        local[mask] = self.config.segmentation_labels_map[m]
+                        local_Y[mask_Y] = self.config.segmentation_labels_map[m]
                         # print(np.unique(local_X, return_counts=True))
                     subvolume[:,:,l] = local
                     subvolume_X[:,:,l] = bigX[:,:,l,0]
