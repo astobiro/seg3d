@@ -37,7 +37,10 @@ import re
 from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
 #from loss import custom_loss
 from utils.utils import Params
+from utils.utils import load_csv_list
+from utils.utils import get_full_filenames
 from pprint import pprint
+import tensorflow as tf
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -53,11 +56,11 @@ class Unet3Dmodel:
         # self.focal_loss = self.focal_lossInit()
         self.total_loss = self.total_lossInit()
         self.callbacks = self.callbacksInit()
-        self.train_gen, self.val_gen, self.test_gen = initGenerators()
+        self.train_gen, self.val_gen, self.test_gen = self.initGenerators()
         return
 
     def check_results_path(self):
-        resultpath = "seg3d/data/results/" + self.config.TESTNO + "/"
+        resultpath = "data/results/" + self.config.TESTNO + "/"
         if not os.path.exists(resultpath):
             os.mkdir(resultpath)
         return resultpath
@@ -65,21 +68,21 @@ class Unet3Dmodel:
     def modelInit(self):
         input_shape = tuple(self.config.INPUT_SHAPE)
         model = self.my_unet3D(input_shape = input_shape, output_channels = 6)
-        model_to_df(model)
+        self.model_to_df(model)
         return model
 
     def callbacksInit(self):
         custom_callbacks = [
             tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=15),
-            tf.keras.callbacks.ModelCheckpoint(self.config.TRAINING_OUTPUT_MODEL_FILE, monitor='val_loss', save_best_only=True, mode='min', save_weights_only=False),
+            tf.keras.callbacks.ModelCheckpoint(self.resultpath + self.config.TRAINING_OUTPUT_MODEL_FILE, monitor='val_loss', save_best_only=True, mode='min', save_weights_only=False),
             tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=7, min_lr=1e-9),
-            tf.keras.callbacks.CSVLogger(self.config.TRAINING_OUTPUT_LOG_FILE)
+            tf.keras.callbacks.CSVLogger(self.resultpath + self.config.TRAINING_OUTPUT_LOG_FILE)
         ]
 
         return custom_callbacks
 
     def total_lossInit(self):
-        total_loss = custom_loss
+        total_loss = self.custom_loss
 
     def initGenerators(self):
         training_list_subvolumes = load_csv_list(self.config.TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME)
@@ -110,6 +113,13 @@ class Unet3Dmodel:
 
     def fit_model(self):
         init = time.time()
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+          try:
+            for gpu in gpus:
+              tf.config.experimental.set_memory_growth(gpu, True)
+          except RuntimeError as e:
+            print(e)
         history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = custom_callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
         end = time.time()
         print("Training time (secs): {}".format(end-init))
@@ -125,7 +135,7 @@ class Unet3Dmodel:
         plt.title("Training")
         plt.legend()
         #plt.show()
-        plt.savefig(self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
+        plt.savefig(self.resultpath + self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
 
         plt.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
         plt.plot(hist_log_df['val_measureDICE'],color='r',label='validation DICE')
@@ -134,7 +144,7 @@ class Unet3Dmodel:
         plt.title("Training")
         plt.legend()
         #plt.show()
-        plt.savefig(self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
+        plt.savefig(self.resultpath + self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
 
         return
 
@@ -271,7 +281,7 @@ class Unet3Dmodel:
                             header[3] : [clean(e) for e in entry[3:]]}
         #df['layername'],df['type'] = zip(*df['Layer (type)'].map(magic))
         #df['kernels'] = [e[-1:][0] for e in df['Output Shape']]
-        df.to_csv(self.config.MODEL_SUMMARY_DF_FILE)
+        df.to_csv(self.resultpath + self.config.MODEL_SUMMARY_DF_FILE)
 
         return
 
@@ -381,7 +391,7 @@ class Unet3Dmodel:
                 this_dict.loc[pos, "Sensitivity"] = float("{0:.4f}".format(sensitivities[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "Specificity"] = float("{0:.4f}".format(specifities[indexer[pred_list[i]]][j]))
         
-        this_dict.to_csv(self.config.EVAL_DF)
+        this_dict.to_csv(self.resultpath + self.config.EVAL_DF)
         
         return
 

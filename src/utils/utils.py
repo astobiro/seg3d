@@ -3,11 +3,26 @@ import bz2
 import pickle
 import _pickle as cPickle
 import json
-import albumentations as A
 
 import sys
 SRC_ABSOLUTE_PATH = "."
 sys.path.append(SRC_ABSOLUTE_PATH)
+
+def get_full_filenames(name,image_folder,seg_folder):
+    image_full_filename = os.path.join(image_folder,name+".mhd")
+    # print(name)
+    seg_full_filename = os.path.join(seg_folder,name+"_LobeSegmentation.nrrd")
+    #print(seg_full_filename)
+    return image_full_filename, seg_full_filename
+
+def load_csv_list(csv_filename):
+    out_list = []
+    with open(csv_filename) as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            out_list.append(row[0])
+    return out_list
+
 
 def visualize(image):
     """PLot images in one row."""

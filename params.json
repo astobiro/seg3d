@@ -6,26 +6,26 @@
 	"TARGET_DIM" : [160,160,16],
 	"TESTNO" : "n1",
 
-    "TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME" : "LUNA16/training_subvolumes_axial.csv",
-    "VALIDATION_LIST_SUBVOLUMES_AXIAL_FILENAME" : "LUNA16/validation_subvolumes_axial.csv",
-    "TEST_LIST_SUBVOLUMES_AXIAL_FILENAME" : "LUNA16/test_subvolumes_axial.csv",
+    "TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME" : "data/axial_test/training_subvolumes_axial.csv",
+    "VALIDATION_LIST_SUBVOLUMES_AXIAL_FILENAME" : "data/axial_test/validation_subvolumes_axial.csv",
+    "TEST_LIST_SUBVOLUMES_AXIAL_FILENAME" : "data/axial_test/test_subvolumes_axial.csv",
 
-    "SUBVOLUMES_AXIAL_FOLDER" : "LUNA16/subvolumes/axial_test",
+    "SUBVOLUMES_AXIAL_FOLDER" : "data/axial_test",
 	
 	"IMAGE_SUFFIX" : "raw",
 	"SEG_SUFFIX" : "seg",
 
-	"MODEL_SUMMARY_DF_FILE" : "LUNA16/model_summary.csv",
-	"TRAINING_OUTPUT_MODEL_FILE" : "LUNA16/out_model_3D_current-{loss:.4f}.h5",
-	"TRAINING_OUTPUT_LOG_FILE" : "LUNA16/out_log_3D_current.csv",
-	"TRAINING_OUTPUT_LOSSGRAPH_FILE" : "LUNA16/lossgraph_current.png",
-	"TRAINING_OUTPUT_DICEGRAPH_FILE" : "LUNA16/dicegraph_current.png",
-	"TRAINING_MODEL_CONTINUE_FILE" : "LUNA16/model-continue.h5",
+	"MODEL_SUMMARY_DF_FILE" : "model_summary.csv",
+	"TRAINING_OUTPUT_MODEL_FILE" : "out_model_3D_current-{loss:.4f}.h5",
+	"TRAINING_OUTPUT_LOG_FILE" : "out_log_3D_current.csv",
+	"TRAINING_OUTPUT_LOSSGRAPH_FILE" : "lossgraph_current.png",
+	"TRAINING_OUTPUT_DICEGRAPH_FILE" : "dicegraph_current.png",
+	"TRAINING_MODEL_CONTINUE_FILE" : "model-continue.h5",
 
-	"PRE_TRAINED_MODEL_FILE" : "LUNA16/out_model_3D.h5",
-	"PRE_TRAINED_LOG_FILE" : "LUNA16/out_log_3D.csv",
-	"PRE_TRAINED_LOSSGRAPH_FILE" : "LUNA16/lossgraph.png",
-	"PRE_TRAINED_DICEGRAPH_FILE" : "LUNA16/dicegraph.png",
+	"PRE_TRAINED_MODEL_FILE" : "out_model_3D.h5",
+	"PRE_TRAINED_LOG_FILE" : "out_log_3D.csv",
+	"PRE_TRAINED_LOSSGRAPH_FILE" : "lossgraph.png",
+	"PRE_TRAINED_DICEGRAPH_FILE" : "dicegraph.png",
 
 	"segmentation_name_map" : ["Background", "SuperiorLeft", "SuperiorRight", "Middle", "LowerRight", "LowerLeft"],
 	"segmentation_labels_map" : [0, 7, 4, 5, 6, 8]
