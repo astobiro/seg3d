@@ -111,7 +111,7 @@ class Unet3Dmodel:
         target_dim = tuple(self.config.TARGET_DIM)
         batch_size = self.config.BATCH_SIZE
 
-        adam = Adam(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
+        adam = Adam(learning_rate=learning_rate)
         self.model.compile(optimizer=adam, loss=loss_function, metrics=[measureDICE]) 
 
         return
