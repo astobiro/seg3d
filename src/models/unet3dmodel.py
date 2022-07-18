@@ -50,8 +50,8 @@ class Unet3Dmodel:
         self.config = Params(config)
         self.resultpath = self.check_results_path()
         # self.dataset = dataset
-        # self.metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
-        # self.optim = Adam(self.config.LR)
+        self.metrics = [measureDICE]
+        self.optim = Adam(self.config.LR)
         # self.preprocess_input = self.preprocess_inputInit()
         self.model = self.modelInit()
         # self.dice_loss = sm.losses.DiceLoss()
@@ -105,33 +105,23 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        learning_rate = self.config.LR
-        loss_function = self.total_loss
-
-        target_dim = tuple(self.config.TARGET_DIM)
-        batch_size = self.config.BATCH_SIZE
-
-        adam = Adam(learning_rate=learning_rate)
-        self.model.compile(optimizer=adam, loss=loss_function, metrics=[measureDICE]) 
+        self.model.compile(optimizer=self.optim, loss=self.total_loss, metrics=self.metrics) 
 
         return
 
     def fit_model(self):
         init = time.time()
-        gpus = tf.config.experimental.list_physical_devices('GPU')
-        if gpus:
-          try:
-            for gpu in gpus:
-              tf.config.experimental.set_memory_growth(gpu, True)
-          except RuntimeError as e:
-            print(e)
+        
         history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = self.callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
         end = time.time()
         print("Training time (secs): {}".format(end-init))
         history = self.model.history
 
+        with open('/trainHistoryDict', 'wb') as file_pi:
+            pickle.dump(history.history, file_pi)
+
         import matplotlib.pyplot as plt
-        hist_log_df = history
+        hist_log_df = history.history
 
         plt.plot(hist_log_df['loss'],color='b',label='training loss')
         plt.plot(hist_log_df['val_loss'],color='r',label='validation loss')
@@ -152,6 +142,11 @@ class Unet3Dmodel:
         plt.savefig(self.resultpath + self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
 
         return
+
+    def load_best_results(self):
+        self.model.load_weights(self.resultpath + "best_model.h5")
+        self.model.compile(self.optim, self.total_loss, self.metrics)
+        print("Loaded weights.")
 
     def my_unet3D(self, input_shape=(160,160,16,4),output_channels=4):
         

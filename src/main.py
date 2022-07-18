@@ -26,6 +26,7 @@ def main():
 		print(args)
 		# Parse the configuration parameters for the ConvNet Model.
 		config = args[1]
+		load = args[2]
 
 	except:
 		print( 'Missing or invalid arguments !' )
@@ -37,15 +38,15 @@ def main():
 
 	model.define_model()
 
-	# if dataset.config.load == "n":
-	print("Starting training")
-	model.fit_model()
-	# elif dataset.config.load == "y":
-	# 	print("Loading weights")
-	# 	model.load_best_results()
-	# else:
-	# 	print("load parameter error, terminating program")
-	# 	return
+	if load != 1:
+		print("Starting training")
+		model.fit_model()
+	elif load == 1:
+		print("Loading weights")
+		model.load_best_results()
+	else:
+		print("load parameter error, terminating program")
+		return
 
 	model.evaluate_model_per_patient()
 
