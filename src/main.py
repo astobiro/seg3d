@@ -26,7 +26,8 @@ def main():
 		print(args)
 		# Parse the configuration parameters for the ConvNet Model.
 		config = args[1]
-		load = args[2]
+		try:
+			load = args[2]
 
 	except:
 		print( 'Missing or invalid arguments !' )
