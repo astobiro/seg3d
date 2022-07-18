@@ -3,6 +3,7 @@ from generators.data_loader import VolumeDataGenerator
 import sys, os
 from utils.utils import Params
 from pprint import pprint
+import tensorflow as tf
 
 SRC_ABSOLUTE_PATH = "."
 sys.path.append(SRC_ABSOLUTE_PATH)
@@ -29,6 +30,14 @@ def main():
 
 	# if dataset.config.load == "n":
 	print("Starting training")
+	gpus = tf.config.experimental.list_physical_devices('GPU')
+	print(gpus)
+	if gpus:
+		try:
+			for gpu in gpus:
+				tf.config.experimental.set_memory_growth(gpu, True)
+		except RuntimeError as e:
+			print(e)
 	model.fit_model()
 	# elif dataset.config.load == "y":
 	# 	print("Loading weights")
