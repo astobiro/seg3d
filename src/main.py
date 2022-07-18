@@ -29,7 +29,7 @@ def main():
 		try:
 			load = args[2]
 		except:
-			print(args)
+			load = 0
 
 	except:
 		print( 'Missing or invalid arguments !' )
