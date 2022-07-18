@@ -25,6 +25,7 @@
 	"TRAINING_OUTPUT_LOSSGRAPH_FILE" : "lossgraph_current.png",
 	"TRAINING_OUTPUT_DICEGRAPH_FILE" : "dicegraph_current.png",
 	"TRAINING_MODEL_CONTINUE_FILE" : "model-continue.h5",
+	"EVAL_DF" : "metrics-evaluation.csv",
 
 	"PRE_TRAINED_MODEL_FILE" : "out_model_3D.h5",
 	"PRE_TRAINED_LOG_FILE" : "out_log_3D.csv",
