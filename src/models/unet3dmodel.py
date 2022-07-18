@@ -23,7 +23,6 @@ from tensorflow.keras.models import Model
 from tensorflow.keras import backend as K
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras.optimizers import Adam, SGD
-from tensorflow.keras.losses import categorical_crossentropy
 from tensorflow.keras.models import load_model
 import skimage.io as io
 import nrrd
@@ -39,8 +38,11 @@ from tensorflow.keras.applications.inception_resnet_v2 import InceptionResNetV2
 from utils.utils import Params
 from utils.utils import load_csv_list
 from utils.utils import get_full_filenames
+from utils.utils import custom_loss
+from utils.utils import measureDICE
 from pprint import pprint
 import tensorflow as tf
+from generators.data_loader import VolumeDataGenerator
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -82,7 +84,8 @@ class Unet3Dmodel:
         return custom_callbacks
 
     def total_lossInit(self):
-        total_loss = self.custom_loss
+        total_loss = custom_loss
+        return total_loss
 
     def initGenerators(self):
         training_list_subvolumes = load_csv_list(self.config.TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME)
@@ -92,6 +95,8 @@ class Unet3Dmodel:
         label_ids = self.config.segmentation_labels_map
         img_suff = self.config.IMAGE_SUFFIX
         seg_suff = self.config.SEG_SUFFIX
+        batch_size = self.config.BATCH_SIZE
+        target_dim = tuple(self.config.TARGET_DIM)
 
         train_gen = VolumeDataGenerator(training_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, verbose=0, label_ids = label_ids, image_suffix = img_suff, seg_suffix = seg_suff)
         val_gen = VolumeDataGenerator(validation_list_subvolumes, self.config.SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0, label_ids = label_ids, image_suffix = img_suff, seg_suffix = seg_suff)
@@ -100,7 +105,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        learning_rate = self.config.LEARNING_RATE
+        learning_rate = self.config.LR
         loss_function = self.total_loss
 
         target_dim = tuple(self.config.TARGET_DIM)
@@ -120,7 +125,7 @@ class Unet3Dmodel:
               tf.config.experimental.set_memory_growth(gpu, True)
           except RuntimeError as e:
             print(e)
-        history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = custom_callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
+        history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = self.callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
         end = time.time()
         print("Training time (secs): {}".format(end-init))
         history = self.model.history
@@ -147,45 +152,6 @@ class Unet3Dmodel:
         plt.savefig(self.resultpath + self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
 
         return
-
-    def generalized_dice(y_true, y_pred):
-        
-        """
-        Generalized Dice Score
-        https://arxiv.org/pdf/1707.03237
-        
-        """
-        
-        y_true    = K.reshape(y_true,shape=(-1,4))
-        y_pred    = K.reshape(y_pred,shape=(-1,4))
-        sum_p     = K.sum(y_pred, -2)
-        sum_r     = K.sum(y_true, -2)
-        sum_pr    = K.sum(y_true * y_pred, -2)
-        weights   = K.pow(K.square(sum_r) + K.epsilon(), -1)
-        generalized_dice = (2 * K.sum(weights * sum_pr)) / (K.sum(weights * (sum_r + sum_p)))
-        
-        return generalized_dice
-
-    def generalized_dice_loss(y_true, y_pred):   
-        return 1-generalized_dice(y_true, y_pred)
-        
-        
-    def custom_loss(y_true, y_pred):
-        
-        """
-        The final loss function consists of the summation of two losses "GDL" and "CE"
-        with a regularization term.
-        """
-        
-        return generalized_dice_loss(y_true, y_pred) + 1.25 * categorical_crossentropy(y_true, y_pred)
-
-    def measureDICE(y_true, y_pred):
-        y_true    = K.reshape(y_true,shape=(-1,4))
-        y_pred    = K.reshape(y_pred,shape=(-1,4))
-        err = 10e-9
-        intersection = tf.reduce_sum(y_true * y_pred)
-        dice_score = (2.0 * K.sum(intersection) + err) / (K.sum(y_true) + K.sum(y_pred) + err)
-        return dice_score
 
     def my_unet3D(self, input_shape=(160,160,16,4),output_channels=4):
         
