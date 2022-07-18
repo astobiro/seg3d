@@ -118,7 +118,7 @@ class Unet3Dmodel:
         print("Training time (secs): {}".format(end-init))
         history = self.model.history
 
-        with open('/trainHistoryDict', 'wb') as file_pi:
+        with open(self.resultpath + "history.csv", 'wb') as file_pi:
             pickle.dump(history.history, file_pi)
 
         import matplotlib.pyplot as plt
