@@ -43,6 +43,7 @@ from utils.utils import measureDICE
 from pprint import pprint
 import tensorflow as tf
 from generators.data_loader import VolumeDataGenerator
+import pickle
 
 class Unet3Dmodel:
     def __init__(self, config):
