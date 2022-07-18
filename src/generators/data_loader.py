@@ -59,6 +59,7 @@ class VolumeDataGenerator(Sequence):
                      dtype=np.float32)
 
         # Generate data
+        IDs = []
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             if self.verbose == 1:
@@ -79,8 +80,9 @@ class VolumeDataGenerator(Sequence):
             
             for j, label_id in enumerate(self.label_ids):
                 y[i,:,:,:,j] = (seg_image == label_id).astype(np.float32)
+            IDs.append(ID)
             
-        return X, y
+        return X, y, IDs
 
     def __getitem__(self, index):
         'Generate one batch of data'
@@ -90,9 +92,9 @@ class VolumeDataGenerator(Sequence):
         # Find list of IDs
         name_list_temp = [self.name_list[k] for k in indexes]
         # Generate data
-        X, y = self.__data_generation(name_list_temp)
+        X, y, ID = self.__data_generation(name_list_temp)
 
-        return X, y
+        return X, y, ID
     
     def __call__(self):
         for i in self.indexes:
