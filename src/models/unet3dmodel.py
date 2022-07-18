@@ -339,7 +339,7 @@ class Unet3Dmodel:
                     specifities[indexer[raw_id]][k] += measureSpecifity(gt_mask, pred_mask)
                 count[indexer[raw_id]]+=1
         # calculate the final metric
-        average_metrics = ["IoU"=[0,0,0,0,0,0], "DICE"=[0,0,0,0,0,0]]
+        average_metrics = {"IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0]}
         for i in range(len(pred_list)):
             ious[indexer[pred_list[i]]] = ious[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             dices[indexer[pred_list[i]]] = dices[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
