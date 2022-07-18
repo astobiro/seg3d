@@ -262,34 +262,34 @@ class Unet3Dmodel:
                 out_list.append(row[0])
         return out_list
 
-    def measureIoU(gt_mask, prediction_mask, err = 10e-9):
-        intersection = np.logical_and(gt_mask, prediction_mask)
-        union = np.logical_or(gt_mask, prediction_mask)
-        iou_score = (np.sum(intersection) + err) / (np.sum(union) + err)
-        return iou_score
-
-    def measureDICE(gt_mask, prediction_mask, err = 10e-9):
-        intersection = np.logical_and(gt_mask, prediction_mask)
-        dice_score = (2.0 * np.sum(intersection) + err) / (np.sum(gt_mask) + np.sum(prediction_mask) + err)
-        return dice_score
-
-    def measureSensitivity(gt_mask, prediction_mask, err = 10e-9):
-        tp = np.sum(np.logical_and(gt_mask, prediction_mask))
-        tn = np.sum(np.logical_and(~gt_mask, ~prediction_mask))
-        fp = np.sum(np.logical_and(~gt_mask, prediction_mask))
-        fn = np.sum(np.logical_and(gt_mask, ~prediction_mask))
-        sensitivity = tp/(tp+fn+err)
-        return sensitivity
-
-    def measureSpecifity(gt_mask, prediction_mask, err = 10e-9):
-        tp = np.sum(np.logical_and(gt_mask, prediction_mask))
-        tn = np.sum(np.logical_and(~gt_mask, ~prediction_mask))
-        fp = np.sum(np.logical_and(~gt_mask, prediction_mask))
-        fn = np.sum(np.logical_and(gt_mask, ~prediction_mask))
-        specificity = tn/(tn+fp+err)
-        return specificity
-
     def evaluate_model_per_patient(self,n_steps=None,shuffle=False):
+        def measureIoU(gt_mask, prediction_mask, err = 10e-9):
+            intersection = np.logical_and(gt_mask, prediction_mask)
+            union = np.logical_or(gt_mask, prediction_mask)
+            iou_score = (np.sum(intersection) + err) / (np.sum(union) + err)
+            return iou_score
+
+        def measureDICE(gt_mask, prediction_mask, err = 10e-9):
+            intersection = np.logical_and(gt_mask, prediction_mask)
+            dice_score = (2.0 * np.sum(intersection) + err) / (np.sum(gt_mask) + np.sum(prediction_mask) + err)
+            return dice_score
+
+        def measureSensitivity(gt_mask, prediction_mask, err = 10e-9):
+            tp = np.sum(np.logical_and(gt_mask, prediction_mask))
+            tn = np.sum(np.logical_and(~gt_mask, ~prediction_mask))
+            fp = np.sum(np.logical_and(~gt_mask, prediction_mask))
+            fn = np.sum(np.logical_and(gt_mask, ~prediction_mask))
+            sensitivity = tp/(tp+fn+err)
+            return sensitivity
+
+        def measureSpecifity(gt_mask, prediction_mask, err = 10e-9):
+            tp = np.sum(np.logical_and(gt_mask, prediction_mask))
+            tn = np.sum(np.logical_and(~gt_mask, ~prediction_mask))
+            fp = np.sum(np.logical_and(~gt_mask, prediction_mask))
+            fn = np.sum(np.logical_and(gt_mask, ~prediction_mask))
+            specificity = tn/(tn+fp+err)
+            return specificity
+
         pred_list = load_csv_list(self.config.TEST_LIST_FILENAME)
         datagen = self.test_gen
         # pred_gen = VolumeDataGenerator(validation_list_subvolumes, SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
