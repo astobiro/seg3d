@@ -51,7 +51,7 @@ class Unet3Dmodel:
         self.resultpath = self.check_results_path()
         # self.dataset = dataset
         # self.metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
-        self.optim = Adam(self.config.LR)
+        # self.optim = Adam(self.config.LR)
         # self.preprocess_input = self.preprocess_inputInit()
         self.model = self.modelInit()
         # self.dice_loss = sm.losses.DiceLoss()
@@ -111,8 +111,8 @@ class Unet3Dmodel:
         target_dim = tuple(self.config.TARGET_DIM)
         batch_size = self.config.BATCH_SIZE
 
-        sgd = SGD(learning_rate=learning_rate, momentum=0.9, decay=0, clipnorm=1.0)
-        self.model.compile(optimizer=sgd, loss=loss_function, metrics=[measureDICE]) 
+        adam = Adam(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
+        self.model.compile(optimizer=adam, loss=loss_function, metrics=[measureDICE]) 
 
         return
 
