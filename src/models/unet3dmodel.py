@@ -361,12 +361,12 @@ class Unet3Dmodel:
         
         this_dict.to_csv(self.resultpath + self.config.EVAL_DF + ".csv")
         
-        average_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
+        average_dict = {"IoU": [0], "DICE": [0]}
         average_starting = self.config.segmentation_name_map
         average_dict = pd.DataFrame(average_dict, index=average_starting)
         for i in range(len(average_metrics["IoU"])):
-            average_dict.loc[self.config.segmentation_name_map[i], "IoU"] = average_metrics["IoU"][i]
-            average_dict.loc[self.config.segmentation_name_map[i], "DICE"] = average_metrics["DICE"][i]
+            average_dict.loc[self.config.segmentation_name_map[i], "IoU"] = float("{0:.4f}".format(average_metrics["IoU"][i]))
+            average_dict.loc[self.config.segmentation_name_map[i], "DICE"] = float("{0:.4f}".format(average_metrics["DICE"][i]))
 
         average_dict.to_csv(self.resultpath + self.config.EVAL_DF + "-average.csv")
 
