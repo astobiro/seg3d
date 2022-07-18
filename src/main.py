@@ -28,6 +28,8 @@ def main():
 		config = args[1]
 		try:
 			load = args[2]
+		except:
+			print(args)
 
 	except:
 		print( 'Missing or invalid arguments !' )
