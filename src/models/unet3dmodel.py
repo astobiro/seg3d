@@ -44,9 +44,9 @@ from pprint import pprint
 import tensorflow as tf
 from generators.data_loader import VolumeDataGenerator
 import pickle
-# from utils.loss_functions import focal_tversky_loss
-# from utils.loss_functions import asym_unified_focal_loss
-# from utils.loss_functions import asymmetric_focal_tversky_loss
+from utils.loss_functions import focal_tversky_loss
+from utils.loss_functions import asym_unified_focal_loss
+from utils.loss_functions import asymmetric_focal_tversky_loss
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -86,14 +86,13 @@ class Unet3Dmodel:
         return custom_callbacks
 
     def lossInit(self, loss):
-        # if loss == "focal_tversky":
-        #     used_loss = focal_tversky_loss()
-        # elif loss == "asym_focal_tversky":
-        #     used_loss = asymmetric_focal_tversky_loss()
-        # elif loss == "asym_unified_focal":
-        # #     used_loss = asym_unified_focal_loss()
-        # return used_loss
-        return 1
+        if loss == "focal_tversky":
+            used_loss = focal_tversky_loss()
+        elif loss == "asym_focal_tversky":
+            used_loss = asymmetric_focal_tversky_loss()
+        elif loss == "asym_unified_focal":
+            used_loss = asym_unified_focal_loss()
+        return used_loss
 
     def initGenerators(self):
         training_list_subvolumes = load_csv_list(self.config.TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME)
@@ -113,7 +112,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        self.model.compile(optimizer=self.optim, loss=custom_loss, metrics=self.metrics) 
+        self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
 
         return
 
@@ -331,7 +330,7 @@ class Unet3Dmodel:
         # calculate metrics per id
         count = np.zeros(len(indexer))
         for i in range(n_pred):
-            batchX, batchy, ID = datagen.__getitem__(i)
+            batchX, batchy, ID = datagen.getItemWithIDs(i)
             predicted_vals = self.model.predict(batchX)
             for j in range(len(batchX)):
                 raw_id = ID[j].split("_")[0]
@@ -384,7 +383,7 @@ class Unet3Dmodel:
         # valid_pred_subvolumes = np.zeros((len(val_gen), 5, 160, 160, 16), dtype=np.uint8)
         # print(valid_pred_subvolumes.shape)
         for i in range(len(val_gen)):
-            x, y, ID = val_gen.__getitem__(i)
+            x, y, ID = val_gen.getItemWithIDs(i)
             pred = model.model.predict(x)
             # batch_subvolumes = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2], pred.shape[3]), dtype=np.uint8)
             for j in range(pred.shape[0]):

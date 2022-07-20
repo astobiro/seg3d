@@ -95,6 +95,18 @@ class VolumeDataGenerator(Sequence):
         X, y, ID = self.__data_generation(name_list_temp)
 
         return X, y
+
+    def getItemWithIDs(self, index):
+        'Generate one batch of data'
+        # Generate indexes of the batch
+        indexes = self.indexes[
+                  index * self.batch_size: (index + 1) * self.batch_size]
+        # Find list of IDs
+        name_list_temp = [self.name_list[k] for k in indexes]
+        # Generate data
+        X, y, ID = self.__data_generation(name_list_temp)
+
+        return X, y, ID
     
     def __call__(self):
         for i in self.indexes:
