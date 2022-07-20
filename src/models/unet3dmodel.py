@@ -118,7 +118,8 @@ class Unet3Dmodel:
 
     def fit_model(self):
         init = time.time()
-        x, y = self.train_gen.__getitem__(0)
+        x, y, ID = self.train_gen.__getitem__(0)
+        print(ID)
         print(np.unique(x, return_counts=True), np.unique(y[:,:,:,:,3], return_counts=True))
         print(np.max(x), np.min(x))
         history = self.model.fit(self.train_gen, epochs=self.config.EPOCHS, validation_data = self.val_gen, callbacks = self.callbacks, steps_per_epoch=len(self.train_gen), validation_steps=len(self.val_gen))
