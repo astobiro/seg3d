@@ -44,6 +44,9 @@ from pprint import pprint
 import tensorflow as tf
 from generators.data_loader import VolumeDataGenerator
 import pickle
+from utils.loss_functions import focal_tversky_loss
+from utils.loss_functions import asym_unified_focal_loss
+from utils.loss_functions import asymmetric_focal_tversky_loss
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -55,9 +58,7 @@ class Unet3Dmodel:
         self.optim = Adam(self.config.LR)
         # self.preprocess_input = self.preprocess_inputInit()
         self.model = self.modelInit()
-        # self.dice_loss = sm.losses.DiceLoss()
-        # self.focal_loss = self.focal_lossInit()
-        self.total_loss = self.total_lossInit()
+        self.loss = self.lossInit(self.config.LOSS)
         self.callbacks = self.callbacksInit()
         self.train_gen, self.val_gen, self.test_gen = self.initGenerators()
         return
@@ -84,9 +85,14 @@ class Unet3Dmodel:
 
         return custom_callbacks
 
-    def total_lossInit(self):
-        total_loss = custom_loss
-        return total_loss
+    def lossInit(self, loss):
+        if loss == "focal_tversky":
+            used_loss = focal_tversky_loss
+        elif loss == "asym_focal_tversky":
+            used_loss = asymmetric_focal_tversky_loss
+        elif loss == "asym_unified_focal":
+            used_loss = asym_unified_focal_loss
+        return used_loss
 
     def initGenerators(self):
         training_list_subvolumes = load_csv_list(self.config.TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME)
@@ -106,7 +112,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        self.model.compile(optimizer=self.optim, loss=self.total_loss, metrics=self.metrics) 
+        self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
 
         return
 
@@ -146,7 +152,7 @@ class Unet3Dmodel:
 
     def load_best_results(self):
         self.model.load_weights(self.resultpath + "best_model.h5")
-        self.model.compile(self.optim, self.total_loss, self.metrics)
+        self.model.compile(self.optim, self.loss, self.metrics)
         print("Loaded weights.")
 
     def my_unet3D(self, input_shape=(160,160,16,4),output_channels=4):
