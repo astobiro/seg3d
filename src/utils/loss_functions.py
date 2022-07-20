@@ -56,7 +56,6 @@ def tversky_loss(delta = 0.7, smooth = 0.000001):
     """
     def loss_function(y_true, y_pred):
         axis = identify_axis(y_true.get_shape())
-        print(y_true.get_shape())
         # Calculate true positives (tp), false negatives (fn) and false positives (fp)   
         tp = K.sum(y_true * y_pred, axis=axis)
         fn = K.sum(y_true * (1-y_pred), axis=axis)
@@ -141,6 +140,7 @@ def focal_tversky_loss(delta=0.7, gamma=0.75, smooth=0.000001):
         focal parameter controls degree of down-weighting of easy examples, by default 0.75
     """
     def loss_function(y_true, y_pred):
+        print(y_true.get_shape())
         # Clip values to prevent division by zero error
         epsilon = K.epsilon()
         y_pred = K.clip(y_pred, epsilon, 1. - epsilon) 
