@@ -87,11 +87,11 @@ class Unet3Dmodel:
 
     def lossInit(self, loss):
         if loss == "focal_tversky":
-            used_loss = focal_tversky_loss
+            used_loss = focal_tversky_loss()
         elif loss == "asym_focal_tversky":
-            used_loss = asymmetric_focal_tversky_loss
+            used_loss = asymmetric_focal_tversky_loss()
         elif loss == "asym_unified_focal":
-            used_loss = asym_unified_focal_loss
+            used_loss = asym_unified_focal_loss()
         return used_loss
 
     def initGenerators(self):
@@ -112,7 +112,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        self.model.compile(optimizer=self.optim, loss=focal_tversky_loss(), metrics=self.metrics) 
+        self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
 
         return
 
