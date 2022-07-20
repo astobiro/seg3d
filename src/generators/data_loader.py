@@ -94,7 +94,7 @@ class VolumeDataGenerator(Sequence):
         # Generate data
         X, y, ID = self.__data_generation(name_list_temp)
 
-        return X, y, ID
+        return X, y
     
     def __call__(self):
         for i in self.indexes:
