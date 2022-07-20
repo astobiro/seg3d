@@ -44,9 +44,9 @@ from pprint import pprint
 import tensorflow as tf
 from generators.data_loader import VolumeDataGenerator
 import pickle
-from utils.loss_functions import focal_tversky_loss
-from utils.loss_functions import asym_unified_focal_loss
-from utils.loss_functions import asymmetric_focal_tversky_loss
+# from utils.loss_functions import focal_tversky_loss
+# from utils.loss_functions import asym_unified_focal_loss
+# from utils.loss_functions import asymmetric_focal_tversky_loss
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -86,13 +86,14 @@ class Unet3Dmodel:
         return custom_callbacks
 
     def lossInit(self, loss):
-        if loss == "focal_tversky":
-            used_loss = focal_tversky_loss()
-        elif loss == "asym_focal_tversky":
-            used_loss = asymmetric_focal_tversky_loss()
-        elif loss == "asym_unified_focal":
-            used_loss = asym_unified_focal_loss()
-        return used_loss
+        # if loss == "focal_tversky":
+        #     used_loss = focal_tversky_loss()
+        # elif loss == "asym_focal_tversky":
+        #     used_loss = asymmetric_focal_tversky_loss()
+        # elif loss == "asym_unified_focal":
+        # #     used_loss = asym_unified_focal_loss()
+        # return used_loss
+        return 1
 
     def initGenerators(self):
         training_list_subvolumes = load_csv_list(self.config.TRAINING_LIST_SUBVOLUMES_AXIAL_FILENAME)
