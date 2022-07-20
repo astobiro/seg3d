@@ -46,7 +46,7 @@ def dice_loss(delta = 0.5, smooth = 0.000001):
 ################################
 def tversky_loss(delta = 0.7, smooth = 0.000001):
     """Tversky loss function for image segmentation using 3D fully convolutional deep networks
-	Link: https://arxiv.org/abs/1706.05721
+    Link: https://arxiv.org/abs/1706.05721
     Parameters
     ----------
     delta : float, optional
@@ -151,7 +151,7 @@ def focal_tversky_loss(delta=0.7, gamma=0.75, smooth=0.000001):
         tversky_class = (tp + smooth)/(tp + delta*fn + (1-delta)*fp + smooth)
         # Average class scores
         focal_tversky_loss = K.mean(K.pow((1-tversky_class), gamma))
-	
+    
         return focal_tversky_loss
 
     return loss_function
@@ -258,7 +258,6 @@ def symmetric_focal_tversky_loss(delta=0.7, gamma=0.75):
 #     Asymmetric Focal loss    #
 ################################
 def asymmetric_focal_loss(delta=0.7, gamma=2.):
-    def loss_function(y_true, y_pred):
     """For Imbalanced datasets
     Parameters
     ----------
@@ -267,6 +266,7 @@ def asymmetric_focal_loss(delta=0.7, gamma=2.):
     gamma : float, optional
         Focal Tversky loss' focal parameter controls degree of down-weighting of easy examples, by default 2.0
     """
+    def loss_function(y_true, y_pred):
         axis = identify_axis(y_true.get_shape())  
 
         epsilon = K.epsilon()
