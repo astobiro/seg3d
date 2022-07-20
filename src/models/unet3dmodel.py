@@ -112,7 +112,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
+        self.model.compile(optimizer=self.optim, loss=focal_tversky_loss(), metrics=self.metrics) 
 
         return
 
