@@ -34,7 +34,6 @@ def generalized_dice(y_true, y_pred):
         https://arxiv.org/pdf/1707.03237
         
         """
-        print(y_true.get_shape())
         y_true    = K.reshape(y_true,shape=(-1,4))
         y_pred    = K.reshape(y_pred,shape=(-1,4))
         sum_p     = K.sum(y_pred, -2)
