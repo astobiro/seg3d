@@ -335,6 +335,7 @@ class Unet3Dmodel:
         for i in range(n_pred):
             batchX, batchy, ID = datagen.getItemWithIDs(i)
             predicted_vals = self.model.predict(batchX)
+            print(len(batchX))
             for j in range(len(batchX)):
                 raw_id = ID[j].split("_")[0]
                 print("RAW ID:", raw_id)
