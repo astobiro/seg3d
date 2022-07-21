@@ -308,7 +308,7 @@ class Unet3Dmodel:
         this_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
         # for i in range(len(pred_list)):
         #     pred_list[i] = str(pred_list[i])
-        print("pred_list:",pred_list)
+        # print("pred_list:",pred_list)
         starting = []
         for i in range(len(self.config.segmentation_name_map)):
             starting.append(str(pred_list[0] + "_" + self.config.segmentation_name_map[i]))
@@ -324,7 +324,7 @@ class Unet3Dmodel:
 
         # index ids to numbers
         indexer = res = {idx : val for idx, val in enumerate(pred_list)}
-        print("indexer:", indexer)
+        # print("indexer:", indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
@@ -336,15 +336,15 @@ class Unet3Dmodel:
             batchX, batchy, ID = datagen.getItemWithIDs(i)
             predicted_vals = self.model.predict(batchX)
             for j in range(len(batchX)):
-                raw_id = ID[j].split("_")[0]
-                print("RAW ID:", raw_id)
-                print("ID", ID)
+                raw_id = int(ID[j].split("_")[0])
+                # print("RAW ID:", raw_id)
+                # print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
-                    print(raw_id, indexer[raw_id])
+                    # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
                     sensitivities[indexer[raw_id]][k] += measureSensitivity(gt_mask, pred_mask)
