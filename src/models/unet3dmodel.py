@@ -304,9 +304,11 @@ class Unet3Dmodel:
         if not n_steps is None:
             n_pred = n_steps
 
+        print(pred_list)
         this_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
         for i in range(len(pred_list)):
             pred_list[i] = str(pred_list[i])
+        print(pred_list)
         starting = []
         for i in range(len(self.config.segmentation_name_map)):
             starting.append(str(pred_list[0] + "_" + self.config.segmentation_name_map[i]))
