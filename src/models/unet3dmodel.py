@@ -207,7 +207,7 @@ class Unet3Dmodel:
         decoderBlock32 = Activation("relu")(decoderBlock32)
         
         fcBlock = Conv3D(output_channels, 1, padding='same')(decoderBlock32)
-        output_layer = Activation('softmax')(fcBlock)
+        output_layer = Activation('sigmoid')(fcBlock)
         
         out_model = Model(inputs = input_layer, outputs = output_layer)
         
