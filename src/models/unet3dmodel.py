@@ -324,6 +324,7 @@ class Unet3Dmodel:
 
         # index ids to numbers
         indexer = res = {val : idx for idx, val in enumerate(pred_list)}
+        print(indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
