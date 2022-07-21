@@ -131,7 +131,7 @@ class VolumeDataGenerator(Sequence):
                 y[i,:,:,:,j] = (seg_image == label_id).astype(np.float32)
             IDs.append(ID)
             
-        return X, y, ID
+        return X, y, IDs
 
     def getItemWithIDs(self, index):
         'Generate one batch of data'
