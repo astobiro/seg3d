@@ -96,17 +96,54 @@ class VolumeDataGenerator(Sequence):
 
         return X, y
 
-    # def getItemWithIDs(self, index):
-    #     'Generate one batch of data'
-    #     # Generate indexes of the batch
-    #     indexes = self.indexes[
-    #               index * self.batch_size: (index + 1) * self.batch_size]
-    #     # Find list of IDs
-    #     name_list_temp = [self.name_list[k] for k in indexes]
-    #     # Generate data
-    #     X, y, ID = self.__data_generation(name_list_temp)
+    def __data_generation_withIDs(self, list_IDs_temp):
+        'Generates data containing batch_size samples'
 
-    #     return X, y, ID
+        # Initialization
+        current_batch_size = len(list_IDs_temp)
+        
+        X = np.zeros((current_batch_size, self.dim[0], self.dim[1], self.dim[2], 1),
+                     dtype=np.float32)
+        y = np.zeros((current_batch_size, self.dim[0], self.dim[1], self.dim[2], len(self.label_ids)),
+                     dtype=np.float32)
+
+        # Generate data
+        IDs = []
+        for i, ID in enumerate(list_IDs_temp):
+            # Store sample
+            if self.verbose == 1:
+                print("Processing: %s" % ID)
+                
+            image_filename = os.path.join(self.image_folder, ID+"_"+self.image_suffix+".nii.gz")
+            seg_filename = os.path.join(self.image_folder, ID+"_"+self.seg_suffix+".nii.gz")
+            
+            image = np.array(nib.load(image_filename).get_fdata(), dtype=np.float32)
+            seg_image = np.array(nib.load(seg_filename).get_fdata(), dtype=np.float32)
+            
+            
+            if seg_image.shape[0]!=self.dim[0] or seg_image.shape[1]!=self.dim[1]:
+                #TODO: implement resize
+                pass
+            
+            X[i,:,:,:,0] = self.normalize_image(image)
+            
+            for j, label_id in enumerate(self.label_ids):
+                y[i,:,:,:,j] = (seg_image == label_id).astype(np.float32)
+            IDs.append(ID)
+            
+        return X, y, ID
+
+    def getItemWithIDs(self, index):
+        'Generate one batch of data'
+        # Generate indexes of the batch
+        indexes = self.indexes[
+                  index * self.batch_size: (index + 1) * self.batch_size]
+        # Find list of IDs
+        name_list_temp = [self.name_list[k] for k in indexes]
+        # Generate data
+        X, y, ID = self.__data_generation_withIDs(name_list_temp)
+
+        return X, y, ID
     
     def __call__(self):
         for i in self.indexes:
