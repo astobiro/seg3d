@@ -1,6 +1,6 @@
 {
 	"BATCH_SIZE" : 5,
-	"LR" :  0.001,
+	"LR" :  0.0001,
 	"EPOCHS" : 40,
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
