@@ -343,7 +343,7 @@ class Unet3Dmodel:
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
-                    print(raw_id, indexer[raw_id])
+                    print(raw_id, indexer[0])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
                     sensitivities[indexer[raw_id]][k] += measureSensitivity(gt_mask, pred_mask)
