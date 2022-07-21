@@ -338,7 +338,7 @@ class Unet3Dmodel:
             for j in range(len(batchX)):
                 raw_id = ID[j].split("_")[0]
                 print("RAW ID:", raw_id)
-                print("ID", ID[j])
+                print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
                 for k in range(pred.shape[3]):
