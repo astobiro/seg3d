@@ -308,7 +308,7 @@ class Unet3Dmodel:
         this_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
         # for i in range(len(pred_list)):
         #     pred_list[i] = str(pred_list[i])
-        print(pred_list)
+        print("pred_list:",pred_list)
         starting = []
         for i in range(len(self.config.segmentation_name_map)):
             starting.append(str(pred_list[0] + "_" + self.config.segmentation_name_map[i]))
@@ -324,7 +324,7 @@ class Unet3Dmodel:
 
         # index ids to numbers
         indexer = res = {val : idx for idx, val in enumerate(pred_list)}
-        print(indexer)
+        print("indexer:", indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
@@ -337,6 +337,7 @@ class Unet3Dmodel:
             predicted_vals = self.model.predict(batchX)
             for j in range(len(batchX)):
                 raw_id = ID[j].split("_")[0]
+                print("RAW ID:", raw_id)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
                 for k in range(pred.shape[3]):
