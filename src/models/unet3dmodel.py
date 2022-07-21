@@ -323,7 +323,7 @@ class Unet3Dmodel:
             this_dict = this_dict.append(x_dict)
 
         # index ids to numbers
-        indexer = res = {val : idx for idx, val in enumerate(pred_list)}
+        indexer = res = {idx : val for idx, val in enumerate(pred_list)}
         print("indexer:", indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
