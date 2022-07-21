@@ -308,7 +308,7 @@ class Unet3Dmodel:
         this_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
         # for i in range(len(pred_list)):
         #     pred_list[i] = str(pred_list[i])
-        # print(pred_list)
+        print(pred_list)
         starting = []
         for i in range(len(self.config.segmentation_name_map)):
             starting.append(str(pred_list[0] + "_" + self.config.segmentation_name_map[i]))
@@ -341,6 +341,7 @@ class Unet3Dmodel:
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
+                    print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
                     sensitivities[indexer[raw_id]][k] += measureSensitivity(gt_mask, pred_mask)
