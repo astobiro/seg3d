@@ -4,8 +4,8 @@
 	"EPOCHS" : 40,
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
-	"LOSS" : "focal_tversky",
-	"TESTNO" : "focal_tversky_loss",
+	"LOSS" : "asym_focal_tversky",
+	"TESTNO" : "asym_focal_tversky_loss",
 
 	"TRAINING_LIST_FILENAME" : "data/axial_test/training.csv",
 	"VALIDATION_LIST_FILENAME" : "data/axial_test/validation.csv",
