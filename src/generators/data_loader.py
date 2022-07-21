@@ -92,7 +92,7 @@ class VolumeDataGenerator(Sequence):
         # Find list of IDs
         name_list_temp = [self.name_list[k] for k in indexes]
         # Generate data
-        X, y, ID = self.__data_generation(name_list_temp)
+        X, y = self.__data_generation(name_list_temp)
 
         return X, y
 
