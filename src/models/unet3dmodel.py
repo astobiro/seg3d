@@ -323,7 +323,7 @@ class Unet3Dmodel:
             this_dict = this_dict.append(x_dict)
 
         # index ids to numbers
-        indexer = res = {idx : val for idx, val in enumerate(pred_list)}
+        indexer = res = {val : idx for idx, val in enumerate(pred_list)}
         # print("indexer:", indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
@@ -336,8 +336,8 @@ class Unet3Dmodel:
             batchX, batchy, ID = datagen.getItemWithIDs(i)
             predicted_vals = self.model.predict(batchX)
             for j in range(len(batchX)):
-                raw_id = int(ID[j].split("_")[0])
-                # print("RAW ID:", raw_id)
+                raw_id = ID[j].split("_")[0]
+                print("RAW ID:", raw_id)
                 # print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
