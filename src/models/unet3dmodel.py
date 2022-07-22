@@ -138,7 +138,7 @@ class Unet3Dmodel:
         plt.legend()
         #plt.show()
         plt.savefig(self.resultpath + self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
-
+        plt.close()
         plt.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
         plt.plot(hist_log_df['val_measureDICE'],color='r',label='validation DICE')
         plt.ylabel("dice")
