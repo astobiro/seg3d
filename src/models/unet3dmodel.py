@@ -79,7 +79,7 @@ class Unet3Dmodel:
         custom_callbacks = [
             tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=15),
             tf.keras.callbacks.ModelCheckpoint(self.resultpath + self.config.TRAINING_OUTPUT_MODEL_FILE, monitor='val_loss', save_best_only=True, mode='min', save_weights_only=False),
-            tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=7, min_lr=1e-9),
+            tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=4, min_lr=1e-9),
             tf.keras.callbacks.CSVLogger(self.resultpath + self.config.TRAINING_OUTPUT_LOG_FILE)
         ]
 
