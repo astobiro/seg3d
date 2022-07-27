@@ -124,30 +124,31 @@ class Unet3Dmodel:
         print("Training time (secs): {}".format(end-init))
         history = self.model.history
 
-        with open(self.resultpath + "history.csv", 'wb') as file_pi:
+        with open(self.resultpath + "history.pkl", 'wb') as file_pi:
             pickle.dump(history.history, file_pi)
 
         import matplotlib.pyplot as plt
         hist_log_df = history.history
 
-        hist_loss, hist_dice = plt.subplots()
-        hist_loss.plot(hist_log_df['loss'],color='b',label='training loss')
-        hist_loss.plot(hist_log_df['val_loss'],color='r',label='validation loss')
-        hist_loss.ylabel("loss")
-        hist_loss.xlabel("epoch")
-        hist_loss.title("Training")
-        hist_loss.legend()
-        #plt.show()
-        hist_loss.savefig(self.resultpath + self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
+        hist_loss, ax1 = plt.subplots()
+        ax1.plot(hist_log_df['loss'],color='b',label='training loss')
+        ax1.plot(hist_log_df['val_loss'],color='r',label='validation loss')
+        ax1.set_ylabel("loss")
+        ax1.set_xlabel("epoch")
+        ax1.set_title("Training")
+        ax1.legend()
+        # plt.show()
+        hist_loss.savefig("test.png")
         plt.close(hist_loss)
-        hist_dice.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
-        hist_dice.plot(hist_log_df['val_measureDICE'],color='r',label='validation DICE')
-        hist_dice.ylabel("dice")
-        hist_dice.xlabel("epoch")
-        hist_dice.title("Training")
-        hist_dice.legend()
-        #plt.show()
-        hist_dice.savefig(self.resultpath + self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
+        hist_dice, ax2 = plt.subplots()
+        ax2.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
+        ax2.plot(hist_log_df['val_measureDICE'],color='r',label='validation DICE')
+        ax2.set_ylabel("dice")
+        ax2.set_xlabel("epoch")
+        ax2.set_title("Training")
+        ax2.legend()
+        # plt.show()
+        hist_dice.savefig("test2.png")
         plt.close(hist_dice)
 
         return
