@@ -138,7 +138,7 @@ class Unet3Dmodel:
         ax1.set_title("Training")
         ax1.legend()
         # plt.show()
-        hist_loss.savefig("test.png")
+        hist_loss.savefig(self.resultpath + self.config.TRAINING_OUTPUT_LOSSGRAPH_FILE)
         plt.close(hist_loss)
         hist_dice, ax2 = plt.subplots()
         ax2.plot(hist_log_df['measureDICE'],color='b',label='training DICE')
@@ -148,7 +148,7 @@ class Unet3Dmodel:
         ax2.set_title("Training")
         ax2.legend()
         # plt.show()
-        hist_dice.savefig("test2.png")
+        hist_dice.savefig(self.resultpath + self.config.TRAINING_OUTPUT_DICEGRAPH_FILE)
         plt.close(hist_dice)
 
         return
