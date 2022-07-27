@@ -4,8 +4,8 @@
 	"EPOCHS" : 40,
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
-	"LOSS" : "asym_unified_focal",
-	"TESTNO" : "40random_asym_unified_focal_loss",
+	"LOSS" : "asym_focal_tversky",
+	"TESTNO" : "40random_asym_focal_tversky_loss",
 
 	"TRAINING_LIST_FILENAME" : "data/axial_40_random_subvolumes/training.csv",
 	"VALIDATION_LIST_FILENAME" : "data/axial_40_random_subvolumes/validation.csv",
