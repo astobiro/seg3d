@@ -21,7 +21,7 @@
 	"SEG_SUFFIX" : "seg",
 
 	"MODEL_SUMMARY_DF_FILE" : "model_summary.csv",
-	"TRAINING_OUTPUT_MODEL_FILE" : "out_model_3D_current-{loss:.4f}.h5",
+	"TRAINING_OUTPUT_MODEL_FILE" : "out_model_3D_current.h5",
 	"TRAINING_OUTPUT_LOG_FILE" : "out_log_3D_current.csv",
 	"TRAINING_OUTPUT_LOSSGRAPH_FILE" : "lossgraph_current.png",
 	"TRAINING_OUTPUT_DICEGRAPH_FILE" : "dicegraph_current.png",
