@@ -42,11 +42,15 @@ def main():
 	model.define_model()
 
 	if load != 1:
-		print("Starting training")
+		print("=========== Starting training ===========")
 		model.fit_model()
 	elif load == 1:
-		print("Loading weights")
+		print("=========== Loading weights ===========")
 		model.load_best_results()
+	elif load == 2:
+		print("=========== Loading weights and starting training ===========")
+		model.load_best_results()
+		model.fit_model()
 	else:
 		print("load parameter error, terminating program")
 		return
