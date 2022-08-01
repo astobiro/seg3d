@@ -41,7 +41,7 @@ def main():
 
 	model.define_model()
 
-	if load != (1 or 2):
+	if load != 1 and load != 2:
 		print("=========== Starting training ===========")
 		model.fit_model()
 	elif load == 1:
