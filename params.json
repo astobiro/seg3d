@@ -1,5 +1,5 @@
 {
-	"BATCH_SIZE" : 5,
+	"BATCH_SIZE" : 10,
 	"LR" :  0.00001,
 	"EPOCHS" : 100,
 	"INPUT_SHAPE": [160,160,16,1],
