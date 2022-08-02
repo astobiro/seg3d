@@ -5,7 +5,7 @@
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
 	"LOSS" : "focal_tversky",
-	"TESTNO" : "40random_focal_tversky_loss-epoch100",
+	"TESTNO" : "40random_focal_tversky_loss-epoch100-batch10",
 
 	"TRAINING_LIST_FILENAME" : "data/axial_40_random_subvolumes/training.csv",
 	"VALIDATION_LIST_FILENAME" : "data/axial_40_random_subvolumes/validation.csv",
