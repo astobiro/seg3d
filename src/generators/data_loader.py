@@ -118,7 +118,7 @@ class VolumeDataGenerator(Sequence):
             
             image = np.array(nib.load(image_filename).get_fdata(), dtype=np.float32)
             seg_image = np.array(nib.load(seg_filename).get_fdata(), dtype=np.float32)
-            
+            print(image.shape, seg_image.shape)
             
             if seg_image.shape[0]!=self.dim[0] or seg_image.shape[1]!=self.dim[1]:
                 #TODO: implement resize
