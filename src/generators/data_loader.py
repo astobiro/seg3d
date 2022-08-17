@@ -14,7 +14,8 @@ class VolumeDataGenerator(Sequence):
                  label_ids=[],
                  verbose=1,
                  image_suffix = "", 
-                 seg_suffix = ""):
+                 seg_suffix = "",
+                 augmentation = None):
         
         self.name_list = name_list
         self.image_folder = image_folder
@@ -25,6 +26,7 @@ class VolumeDataGenerator(Sequence):
         self.verbose = verbose
         self.image_suffix = image_suffix
         self.seg_suffix = seg_suffix
+        self.augmentation = augmentation
         self.on_epoch_end()
 
     def on_epoch_end(self):
@@ -59,7 +61,6 @@ class VolumeDataGenerator(Sequence):
                      dtype=np.float32)
 
         # Generate data
-        # IDs = []
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             if self.verbose == 1:
@@ -71,16 +72,14 @@ class VolumeDataGenerator(Sequence):
             image = np.array(nib.load(image_filename).get_fdata(), dtype=np.float32)
             seg_image = np.array(nib.load(seg_filename).get_fdata(), dtype=np.float32)
             
-            
-            if seg_image.shape[0]!=self.dim[0] or seg_image.shape[1]!=self.dim[1]:
-                #TODO: implement resize
-                pass
-            
-            X[i,:,:,:,0] = self.normalize_image(image)
-            
             for j, label_id in enumerate(self.label_ids):
                 y[i,:,:,:,j] = (seg_image == label_id).astype(np.float32)
-            # IDs.append(ID)
+            
+            if self.augmentation:
+                sample = self.augmentation(image=image, mask=seg_image)
+                image, seg_image = sample['image'], sample['mask']
+
+            X[i,:,:,:,0] = self.normalize_image(image)
             
         return X, y
 

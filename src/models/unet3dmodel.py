@@ -308,7 +308,7 @@ class Unet3Dmodel:
             n_pred = n_steps
 
         # print(pred_list)
-        this_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
+        this_dict = {"IoU": [0], "DICE": [0]}
         # for i in range(len(pred_list)):
         #     pred_list[i] = str(pred_list[i])
         # print("pred_list:",pred_list)
@@ -321,7 +321,7 @@ class Unet3Dmodel:
             starting = []
             for j in range(len(self.config.segmentation_name_map)):
                 starting.append(str(pred_list[i] + "_" + self.config.segmentation_name_map[j]))
-            y_dict = {"IoU": [0], "DICE": [0], "Sensitivity": [0], "Specificity": [0]}
+            y_dict = {"IoU": [0], "DICE": [0]}
             x_dict = pd.DataFrame(y_dict, index=starting)
             this_dict = this_dict.append(x_dict)
 
@@ -331,8 +331,6 @@ class Unet3Dmodel:
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
-        sensitivities = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
-        specifities = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         # calculate metrics per id
         count = np.zeros(len(indexer))
         for i in range(n_pred):
@@ -351,24 +349,18 @@ class Unet3Dmodel:
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
-                    sensitivities[indexer[raw_id]][k] += measureSensitivity(gt_mask, pred_mask)
-                    specifities[indexer[raw_id]][k] += measureSpecifity(gt_mask, pred_mask)
                 count[indexer[raw_id]]+=1
         # calculate the final metric
         average_metrics = {"IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0]}
         for i in range(len(pred_list)):
             ious[indexer[pred_list[i]]] = ious[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             dices[indexer[pred_list[i]]] = dices[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
-            sensitivities[indexer[pred_list[i]]] = sensitivities[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
-            specifities[indexer[pred_list[i]]] = specifities[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             # put metrics into dataframe
             for j in range(len(self.config.segmentation_name_map)):
                 pos = str(pred_list[i] + "_" + self.config.segmentation_name_map[j])
                 # float("{0:.4f}".format(x))
                 this_dict.loc[pos, "IoU"] = float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "DICE"] = float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
-                this_dict.loc[pos, "Sensitivity"] = float("{0:.4f}".format(sensitivities[indexer[pred_list[i]]][j]))
-                this_dict.loc[pos, "Specificity"] = float("{0:.4f}".format(specifities[indexer[pred_list[i]]][j]))
                 average_metrics["IoU"][j] += float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
                 average_metrics["DICE"][j] += float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
         for i in range(len(average_metrics["IoU"])):
@@ -388,56 +380,55 @@ class Unet3Dmodel:
 
         return
 
-    def save_masks(val_gen, model):
-        # temp = val_gen.__getitem__(0)
-        # valid_pred_subvolumes = np.zeros((len(val_gen), 5, 160, 160, 16), dtype=np.uint8)
-        # print(valid_pred_subvolumes.shape)
-        for i in range(len(val_gen)):
-            x, y, ID = val_gen.getItemWithIDs(i)
+    def save_masks(self, datagen=self.test_gen, model=self.model):
+        subvolumes = []
+        for i in range(len(datagen)):
+            x, y, ID = datagen.getItemWithIDs(i)
             pred = model.model.predict(x)
-            # batch_subvolumes = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2], pred.shape[3]), dtype=np.uint8)
             for j in range(pred.shape[0]):
-                bigX = x[j,:,:,:,:]
-                bigY = y[j,:,:,:,:]
+                # bigX = x[j,:,:,:,:]
+                # bigY = y[j,:,:,:,:]
                 batch = pred[j,:,:,:,:]
-                n_classes_X = bigX.shape[3]
+                # n_classes_X = bigX.shape[3]
                 n_classes = batch.shape[3]
-                n_classes_Y = bigY.shape[3]
-                arr_labels_X = np.argmax(bigX, axis=3)
+                # n_classes_Y = bigY.shape[3]
+                # arr_labels_X = np.argmax(bigX, axis=3)
                 arr_labels = np.argmax(batch, axis=3)
-                arr_labels_Y = np.argmax(bigY, axis=3)
-                arr_X = np.zeros(bigX.shape, dtype=np.float32)
+                # arr_labels_Y = np.argmax(bigY, axis=3)
+                # arr_X = np.zeros(bigX.shape, dtype=np.float32)
                 arr = np.zeros(batch.shape, dtype=np.float32)
-                arr_Y = np.zeros(batch.shape, dtype=np.float32)
+                # arr_Y = np.zeros(batch.shape, dtype=np.float32)
                 for k in range(n_classes):
                     arr[:,:,:,k] = (arr_labels == k).astype(np.float32)
-                for k in range(n_classes_X):
-                    arr_X[:,:,:,k] = (arr_labels_X == k).astype(np.float32)
-                for k in range(n_classes_Y):
-                    arr_Y[:,:,:,k] = (arr_labels_Y == k).astype(np.float32)
-                subvolume_X = np.zeros((arr_X.shape[0], arr_X.shape[1], arr_X.shape[2]), dtype=np.uint8)
+                # for k in range(n_classes_X):
+                #     arr_X[:,:,:,k] = (arr_labels_X == k).astype(np.float32)
+                # for k in range(n_classes_Y):
+                #     arr_Y[:,:,:,k] = (arr_labels_Y == k).astype(np.float32)
+                # subvolume_X = np.zeros((arr_X.shape[0], arr_X.shape[1], arr_X.shape[2]), dtype=np.uint8)
                 subvolume = np.zeros((arr.shape[0], arr.shape[1], arr.shape[2]), dtype=np.uint8)
-                subvolume_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1], arr_Y.shape[2]), dtype=np.uint8)
+                # subvolume_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1], arr_Y.shape[2]), dtype=np.uint8)
                 for l in range(arr.shape[2]):
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
-                    local_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1]), dtype=np.uint8)
+                    # local_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1]), dtype=np.uint8)
                     for m in range(n_classes):
                         prob_map = arr[:,:,l,m]
-                        prob_map_Y = arr_Y[:,:,l,m]
+                        # prob_map_Y = arr_Y[:,:,l,m]
                         mask = prob_map > 0.5
-                        mask_Y = prob_map > 0.5
+                        # mask_Y = prob_map > 0.5
                         # print(local_X.shape, mask_X.shape)
                         local[mask] = self.config.segmentation_labels_map[m]
-                        local_Y[mask_Y] = self.config.segmentation_labels_map[m]
+                        # local_Y[mask_Y] = self.config.segmentation_labels_map[m]
                         # print(np.unique(local_X, return_counts=True))
                     subvolume[:,:,l] = local
-                    subvolume_X[:,:,l] = bigX[:,:,l,0]
-                    subvolume_Y[:,:,l] = local_Y
+                    # subvolume_X[:,:,l] = bigX[:,:,l,0]
+                    # subvolume_Y[:,:,l] = local_Y
                     # nib.save(nib.Nifti1Image(subvolume_X, affine=np.eye(4)), os.path.join("LUNA16/results/predictions",ID[j]+"_raw.nii.gz"))
-                    nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join("LUNA16/" + TESTFOLDER + "predictions",ID[j]+"_pred.nii.gz"))
+                    subvolumes.append((subvolume, ID))
+                    # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join("LUNA16/" + TESTFOLDER + "predictions",ID[j]+"_pred.nii.gz"))
                     # nib.save(nib.Nifti1Image(subvolume_Y, affine=np.eye(4)), os.path.join("LUNA16/results/test1/predictions",ID[j]+"_gt.nii.gz"))
                     # print(subvolume_X.shape)
                     # print(np.unique(subvolume_X, return_counts=True))
                     # input()
                 # batch_subvolumes[j,:,:,:] = subvolume
             # valid_pred_subvolumes[i,:,:,:,:] = batch_subvolumes
+        pickle.dump(subvolumes, self.resultpath + "predictions.pickle")
