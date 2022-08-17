@@ -15,7 +15,7 @@
     "VALIDATION_LIST_SUBVOLUMES_AXIAL_FILENAME" : "data/axial_40_random_subvolumes/validation_subvolumes_axial.csv",
     "TEST_LIST_SUBVOLUMES_AXIAL_FILENAME" : "data/axial_40_random_subvolumes/test_subvolumes_axial.csv",
 
-    "SUBVOLUMES_AXIAL_FOLDER" : "data/axial_40_random_subvolumes/test1",
+    "SUBVOLUMES_AXIAL_FOLDER" : "data/axial_40_random_subvolumes/axialsubvolumes",
 	
 	"IMAGE_SUFFIX" : "raw",
 	"SEG_SUFFIX" : "seg",
