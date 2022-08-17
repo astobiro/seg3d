@@ -380,8 +380,10 @@ class Unet3Dmodel:
 
         return
 
-    def save_masks(self, datagen=self.test_gen, model=self.model):
+    def save_masks(self):
         subvolumes = []
+        datagen = self.test_gen
+        model = self.model
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.model.predict(x)
