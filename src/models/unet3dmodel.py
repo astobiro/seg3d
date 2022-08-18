@@ -433,4 +433,6 @@ class Unet3Dmodel:
                     # input()
                 # batch_subvolumes[j,:,:,:] = subvolume
             # valid_pred_subvolumes[i,:,:,:,:] = batch_subvolumes
-        pickle.dump(subvolumes, self.resultpath + "predictions.pickle")
+        subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
+        pickle.dump(subvolumes, subvolumes_file)
+        subvolumes_file.close()
