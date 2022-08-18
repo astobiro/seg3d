@@ -386,7 +386,7 @@ class Unet3Dmodel:
         model = self.model
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
-            pred = model.model.predict(x)
+            pred = model.predict(x)
             for j in range(pred.shape[0]):
                 # bigX = x[j,:,:,:,:]
                 # bigY = y[j,:,:,:,:]
