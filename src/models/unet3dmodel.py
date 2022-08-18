@@ -425,7 +425,7 @@ class Unet3Dmodel:
                     # subvolume_X[:,:,l] = bigX[:,:,l,0]
                     # subvolume_Y[:,:,l] = local_Y
                     # nib.save(nib.Nifti1Image(subvolume_X, affine=np.eye(4)), os.path.join("LUNA16/results/predictions",ID[j]+"_raw.nii.gz"))
-                    subvolumes.append((subvolume, ID[j]))
+                    subvolumes.append((subvolume, ID[i]))
                     # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join("LUNA16/" + TESTFOLDER + "predictions",ID[j]+"_pred.nii.gz"))
                     # nib.save(nib.Nifti1Image(subvolume_Y, affine=np.eye(4)), os.path.join("LUNA16/results/test1/predictions",ID[j]+"_gt.nii.gz"))
                     # print(subvolume_X.shape)
