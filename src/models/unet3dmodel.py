@@ -391,7 +391,7 @@ class Unet3Dmodel:
             for j in range(pred.shape[0]):
                 # if ID[j].split("_")[0] != "1.3.6.1.4.1.14519.5.2.1.6279.6001.194465340552956447447896167830":
                 #     continue
-                batch = pred[j,:,:,:,:]
+                batch = pred[j]
                 n_classes = batch.shape[3]
                 arr_labels = np.argmax(batch, axis=3)
                 # print(arr_labels.shape)
@@ -404,12 +404,12 @@ class Unet3Dmodel:
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
                     for m in range(n_classes):
                         prob_map = arr[:,:,l,m]
-                        mask = prob_map > 0.5
-                        local[mask] = self.config.segmentation_labels_map[m]
+                        # mask = prob_map > 0.5
+                        local[prob_map] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
-                nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
-                # subvolumes.append((subvolume, ID[j]))
-        # subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
-        # pickle.dump(subvolumes, subvolumes_file)
-        # subvolumes_file.close()
+                # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
+                subvolumes.append((subvolume, ID[j]))
+        subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
+        pickle.dump(subvolumes, subvolumes_file)
+        subvolumes_file.close()
         print("Predictions saved.")
