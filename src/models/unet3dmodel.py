@@ -413,7 +413,7 @@ class Unet3Dmodel:
                         local[mask] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
                 # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
-                subvolumes[i] = (subvolume, ID)
+                subvolumes[i] = (subvolume, ID[j])
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
         subvolumes_file.close()
