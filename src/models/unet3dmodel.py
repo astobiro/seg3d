@@ -387,7 +387,7 @@ class Unet3Dmodel:
         model = self.model
         print(len(datagen)*self.config.BATCH_SIZE)
         samplex, sampley, sampleID = datagen.getItemWithIDs(0)
-        subvolumes = np.zeros(len(datagen)*self.config.BATCH_SIZE)
+        subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         print(subvolumes.shape)
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
