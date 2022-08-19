@@ -408,7 +408,8 @@ class Unet3Dmodel:
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
                     for m in range(n_classes):
                         prob_map = arr[:,:,l,m]
-                        # mask = prob_map > 0.5
+                        print(np.unique(prob_map))
+                        mask = prob_map > 0.5
                         local[prob_map] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
                 # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
