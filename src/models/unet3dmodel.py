@@ -398,10 +398,10 @@ class Unet3Dmodel:
                 batch = pred[j]
                 n_classes = batch.shape[3]
                 # arr_labels = np.argmax(batch, axis=3)
-                arr_labels = batch
+                arr = batch
                 # print(arr_labels.shape)
                 # print(np.unique(arr_labels))
-                arr = np.zeros(batch.shape)
+                # arr = np.zeros(batch.shape)
                 for k in range(n_classes):
                     arr[:,:,:,k] = arr_labels == k
                 subvolume = np.zeros((arr.shape[0], arr.shape[1], arr.shape[2]), dtype=np.uint8)
