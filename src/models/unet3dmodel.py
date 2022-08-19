@@ -391,8 +391,8 @@ class Unet3Dmodel:
                 batch = pred[j,:,:,:,:]
                 n_classes = batch.shape[3]
                 arr_labels = np.argmax(batch, axis=3)
-                print(arr_labels.shape)
-                print(np.unique(arr_labels))
+                # print(arr_labels.shape)
+                # print(np.unique(arr_labels))
                 arr = np.zeros(batch.shape)
                 for k in range(n_classes):
                     arr[:,:,:,k] = arr_labels == k
