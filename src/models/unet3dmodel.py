@@ -9,6 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import nibabel as nib
+import sys
 
 from skimage import io
 from skimage.transform import rescale, resize
@@ -382,10 +383,13 @@ class Unet3Dmodel:
         return
 
     def save_masks(self):
-        subvolumes = []
         datagen = self.test_gen
         model = self.model
         print(len(datagen)*self.config.BATCH_SIZE)
+        samplex, sampley, sampleID = datagen.getItemWithIDs(0)
+        subvolumes = np.zeros(((len(datagen)*self.config.BATCH_SIZE), samplex.shape[1], samplex.shape[2], samplex.shape[3], 1))
+        print(subvolumes.shape)
+        sys.exit()
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
