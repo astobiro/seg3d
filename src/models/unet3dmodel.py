@@ -385,6 +385,7 @@ class Unet3Dmodel:
         subvolumes = []
         datagen = self.test_gen
         model = self.model
+        print(len(datagen)*self.BATCH_SIZE)
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
