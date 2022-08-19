@@ -387,9 +387,8 @@ class Unet3Dmodel:
         model = self.model
         print(len(datagen)*self.config.BATCH_SIZE)
         samplex, sampley, sampleID = datagen.getItemWithIDs(0)
-        subvolumes = np.zeros(((len(datagen)*self.config.BATCH_SIZE), samplex.shape[1], samplex.shape[2], samplex.shape[3], 1))
+        subvolumes = np.zeros(((len(datagen)*self.config.BATCH_SIZE), 1, samplex.shape[1], samplex.shape[2], samplex.shape[3]))
         print(subvolumes.shape)
-        sys.exit()
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
@@ -413,7 +412,9 @@ class Unet3Dmodel:
                         local[prob_map] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
                 # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
-                subvolumes.append((subvolume, ID[j]))
+                subvolumes[i][j] = ID
+                subvolumes[i][j][:] = subvolume
+                input()
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
         subvolumes_file.close()
