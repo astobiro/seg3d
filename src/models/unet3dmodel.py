@@ -397,7 +397,8 @@ class Unet3Dmodel:
                 #     continue
                 batch = pred[j]
                 n_classes = batch.shape[3]
-                arr_labels = np.argmax(batch, axis=3)
+                # arr_labels = np.argmax(batch, axis=3)
+                arr_labels = batch
                 # print(arr_labels.shape)
                 # print(np.unique(arr_labels))
                 arr = np.zeros(batch.shape)
