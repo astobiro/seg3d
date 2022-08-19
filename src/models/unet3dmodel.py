@@ -388,51 +388,23 @@ class Unet3Dmodel:
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
             for j in range(pred.shape[0]):
-                # bigX = x[j,:,:,:,:]
-                # bigY = y[j,:,:,:,:]
                 batch = pred[j,:,:,:,:]
-                # n_classes_X = bigX.shape[3]
                 n_classes = batch.shape[3]
-                # n_classes_Y = bigY.shape[3]
-                # arr_labels_X = np.argmax(bigX, axis=3)
                 arr_labels = np.argmax(batch, axis=3)
-                # arr_labels_Y = np.argmax(bigY, axis=3)
-                # arr_X = np.zeros(bigX.shape, dtype=np.float32)
+                print(arr_labels.shape)
+                print(np.unique(arr_labels))
                 arr = np.zeros(batch.shape, dtype=np.float32)
-                # arr_Y = np.zeros(batch.shape, dtype=np.float32)
                 for k in range(n_classes):
                     arr[:,:,:,k] = (arr_labels == k).astype(np.float32)
-                # for k in range(n_classes_X):
-                #     arr_X[:,:,:,k] = (arr_labels_X == k).astype(np.float32)
-                # for k in range(n_classes_Y):
-                #     arr_Y[:,:,:,k] = (arr_labels_Y == k).astype(np.float32)
-                # subvolume_X = np.zeros((arr_X.shape[0], arr_X.shape[1], arr_X.shape[2]), dtype=np.uint8)
                 subvolume = np.zeros((arr.shape[0], arr.shape[1], arr.shape[2]), dtype=np.uint8)
-                # subvolume_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1], arr_Y.shape[2]), dtype=np.uint8)
                 for l in range(arr.shape[2]):
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
-                    # local_Y = np.zeros((arr_Y.shape[0], arr_Y.shape[1]), dtype=np.uint8)
                     for m in range(n_classes):
                         prob_map = arr[:,:,l,m]
-                        # prob_map_Y = arr_Y[:,:,l,m]
                         mask = prob_map > 0.5
-                        # mask_Y = prob_map > 0.5
-                        # print(local_X.shape, mask_X.shape)
                         local[mask] = self.config.segmentation_labels_map[m]
-                        # local_Y[mask_Y] = self.config.segmentation_labels_map[m]
-                        # print(np.unique(local_X, return_counts=True))
                     subvolume[:,:,l] = local
-                    # subvolume_X[:,:,l] = bigX[:,:,l,0]
-                    # subvolume_Y[:,:,l] = local_Y
-                    # nib.save(nib.Nifti1Image(subvolume_X, affine=np.eye(4)), os.path.join("LUNA16/results/predictions",ID[j]+"_raw.nii.gz"))
                 subvolumes.append((subvolume, ID[j]))
-                    # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join("LUNA16/" + TESTFOLDER + "predictions",ID[j]+"_pred.nii.gz"))
-                    # nib.save(nib.Nifti1Image(subvolume_Y, affine=np.eye(4)), os.path.join("LUNA16/results/test1/predictions",ID[j]+"_gt.nii.gz"))
-                    # print(subvolume_X.shape)
-                    # print(np.unique(subvolume_X, return_counts=True))
-                    # input()
-                # batch_subvolumes[j,:,:,:] = subvolume
-            # valid_pred_subvolumes[i,:,:,:,:] = batch_subvolumes
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
         subvolumes_file.close()
