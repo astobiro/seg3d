@@ -377,6 +377,7 @@ class Unet3Dmodel:
             average_dict.loc[self.config.segmentation_name_map[i], "DICE"] = float("{0:.4f}".format(average_metrics["DICE"][i]))
 
         average_dict.to_csv(self.resultpath + self.config.EVAL_DF + "-average.csv")
+        print("Metrics saved to files.")
 
         return
 
@@ -388,6 +389,8 @@ class Unet3Dmodel:
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
             for j in range(pred.shape[0]):
+                if ID[j].split("_")[0] != ID[0].split("_"):
+                    continue
                 batch = pred[j,:,:,:,:]
                 n_classes = batch.shape[3]
                 arr_labels = np.argmax(batch, axis=3)
@@ -404,7 +407,9 @@ class Unet3Dmodel:
                         mask = prob_map > 0.5
                         local[mask] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
+                nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
                 subvolumes.append((subvolume, ID[j]))
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
         subvolumes_file.close()
+        print("Predictions saved.")
