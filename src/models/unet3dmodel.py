@@ -389,7 +389,8 @@ class Unet3Dmodel:
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
             for j in range(pred.shape[0]):
-                if ID[j].split("_")[0] != ID[0].split("_"):
+                print(ID[j])
+                if ID[j].split("_")[0] != "1.3.6.1.4.1.14519.5.2.1.6279.6001.194465340552956447447896167830":
                     continue
                 batch = pred[j,:,:,:,:]
                 n_classes = batch.shape[3]
