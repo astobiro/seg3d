@@ -390,21 +390,18 @@ class Unet3Dmodel:
         subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         # print(subvolumes.shape)
         count = 0
+        rawpreds = [None]*(len(datagen)*self.config.BATCH_SIZE)
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
             for j in range(pred.shape[0]):
-                # if ID[j].split("_")[0] != "1.3.6.1.4.1.14519.5.2.1.6279.6001.194465340552956447447896167830":
-                #     continue
+                rawpreds[count] = (pred[j], ID[j])
                 batch = pred[j]
                 n_classes = batch.shape[3]
-                # arr_labels = np.argmax(batch, axis=3)
-                arr = batch
-                # print(arr_labels.shape)
-                # print(np.unique(arr_labels))
-                # arr = np.zeros(batch.shape)
-                # for k in range(n_classes):
-                #     arr[:,:,:,k] = arr_labels == k
+                arr_labels = np.argmax(batch, axis=3)
+                arr = np.zeros(batch.shape)
+                for k in range(n_classes):
+                    arr[:,:,:,k] = arr_labels == k
                 subvolume = np.zeros((arr.shape[0], arr.shape[1], arr.shape[2]), dtype=np.uint8)
                 for l in range(arr.shape[2]):
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
@@ -419,4 +416,7 @@ class Unet3Dmodel:
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
         subvolumes_file.close()
+        rawpreds_file = open(self.resultpath + "rawpreds.pkl", 'wb')
+        pickle.dump(rawpreds, rawpreds_file)
+        rawpreds_file.close()
         print("Predictions saved.")
