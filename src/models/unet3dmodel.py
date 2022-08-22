@@ -390,7 +390,7 @@ class Unet3Dmodel:
         subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         # print(subvolumes.shape)
         count = 0
-        rawpreds = [None]*(len(datagen)
+        rawpreds = [None]*(len(datagen))
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
