@@ -390,12 +390,12 @@ class Unet3Dmodel:
         subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         # print(subvolumes.shape)
         count = 0
-        rawpreds = [None]*(len(datagen)*self.config.BATCH_SIZE)
+        rawpreds = [None]*(len(datagen)
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
+            rawpreds = (pred, ID)
             for j in range(pred.shape[0]):
-                rawpreds[count] = (pred[j], ID[j])
                 batch = pred[j]
                 n_classes = batch.shape[3]
                 arr_labels = np.argmax(batch, axis=3)
