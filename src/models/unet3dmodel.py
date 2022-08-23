@@ -48,7 +48,7 @@ import pickle
 from utils.loss_functions import focal_tversky_loss
 from utils.loss_functions import asym_unified_focal_loss
 from utils.loss_functions import asymmetric_focal_tversky_loss
-from utils.loss_functions import loss_functions as lf
+import utils.loss_functions as lf
 
 class Unet3Dmodel:
     def __init__(self, config):
