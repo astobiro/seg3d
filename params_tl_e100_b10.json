@@ -4,8 +4,8 @@
 	"EPOCHS" : 100,
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
-	"LOSS" : "focal",
-	"TESTNO" : "40random_focal_loss-epoch100-batch-10",
+	"LOSS" : "focal_tversky",
+	"TESTNO" : "40random_focal_tversky_loss-epoch100-batch10-new",
 
 	"TRAINING_LIST_FILENAME" : "data/axial_40_random_subvolumes/training.csv",
 	"VALIDATION_LIST_FILENAME" : "data/axial_40_random_subvolumes/validation.csv",
@@ -21,7 +21,7 @@
 	"SEG_SUFFIX" : "seg",
 
 	"MODEL_SUMMARY_DF_FILE" : "model_summary.csv",
-	"TRAINING_OUTPUT_MODEL_FILE" : "out_model_3D_current-{measureDICE:.4f}.h5",
+	"TRAINING_OUTPUT_MODEL_FILE" : "out_model_3D_current.h5",
 	"TRAINING_OUTPUT_LOG_FILE" : "out_log_3D_current.csv",
 	"TRAINING_OUTPUT_LOSSGRAPH_FILE" : "lossgraph_current.png",
 	"TRAINING_OUTPUT_DICEGRAPH_FILE" : "dicegraph_current.png",

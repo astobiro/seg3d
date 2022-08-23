@@ -48,6 +48,7 @@ import pickle
 from utils.loss_functions import focal_tversky_loss
 from utils.loss_functions import asym_unified_focal_loss
 from utils.loss_functions import asymmetric_focal_tversky_loss
+from utils.loss_functions import loss_functions as lf
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -93,6 +94,10 @@ class Unet3Dmodel:
             used_loss = asymmetric_focal_tversky_loss()
         elif loss == "asym_unified_focal":
             used_loss = asym_unified_focal_loss()
+        elif loss == "focal":
+            used_loss = lf.focal_loss()
+        elif loss == "asym_focal":
+            used_loss = lf.asymmetric_focal_loss()
         return used_loss
 
     def initGenerators(self):
@@ -394,7 +399,7 @@ class Unet3Dmodel:
         for i in range(len(datagen)):
             x, y, ID = datagen.getItemWithIDs(i)
             pred = model.predict(x)
-            rawpreds = (pred, ID)
+            rawpreds[i] = (pred, ID)
             for j in range(pred.shape[0]):
                 batch = pred[j]
                 n_classes = batch.shape[3]
