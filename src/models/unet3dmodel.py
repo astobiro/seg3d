@@ -79,9 +79,9 @@ class Unet3Dmodel:
 
     def callbacksInit(self):
         custom_callbacks = [
-            tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=15),
-            tf.keras.callbacks.ModelCheckpoint(self.resultpath + self.config.TRAINING_OUTPUT_MODEL_FILE, monitor='val_loss', save_best_only=True, mode='min', save_weights_only=False),
-            tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=4, min_lr=1e-9),
+            tf.keras.callbacks.EarlyStopping(monitor='val_measureDICE', mode='max', verbose=1, patience=15),
+            tf.keras.callbacks.ModelCheckpoint(self.resultpath + self.config.TRAINING_OUTPUT_MODEL_FILE, monitor='val_measureDICE', save_best_only=True, mode='max', save_weights_only=False),
+            tf.keras.callbacks.ReduceLROnPlateau(monitor='val_measureDICE', factor=0.1, patience=4, min_lr=1e-9),
             tf.keras.callbacks.CSVLogger(self.resultpath + self.config.TRAINING_OUTPUT_LOG_FILE)
         ]
 
@@ -230,6 +230,8 @@ class Unet3Dmodel:
             tmp = re.split(r'\s{1,}',clean(x))
             return tmp
 
+        if os.path.exists(self.resultpath + self.config.MODEL_SUMMARY_DF_FILE):
+            return
         width = 250
         stringlist = []
         model.summary(print_fn=lambda x: stringlist.append(x))
