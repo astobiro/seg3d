@@ -393,7 +393,6 @@ class Unet3Dmodel:
         datagen = self.test_gen
         model = self.model
         print(len(datagen)*self.config.BATCH_SIZE)
-        samplex, sampley, sampleID = datagen.getItemWithIDs(0)
         subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         # print(subvolumes.shape)
         count = 0
@@ -403,12 +402,12 @@ class Unet3Dmodel:
             pred = model.predict(x)
             # rawpreds[i] = (pred, ID)
             for j in range(pred.shape[0]):
-                batch = pred[j]
+                batch = pred[j,:,:,:,:]
                 n_classes = batch.shape[3]
                 arr_labels = np.argmax(batch, axis=3)
-                arr = np.zeros(batch.shape)
+                arr = np.zeros(batch.shape, dtype=np.float32)
                 for k in range(n_classes):
-                    arr[:,:,:,k] = arr_labels == k
+                    arr[:,:,:,k] = (arr_labels == k).astype(np.float32)
                 subvolume = np.zeros((arr.shape[0], arr.shape[1], arr.shape[2]), dtype=np.uint8)
                 for l in range(arr.shape[2]):
                     local = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
