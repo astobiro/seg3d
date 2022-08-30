@@ -416,7 +416,7 @@ class Unet3Dmodel:
                         mask = prob_map > 0.5
                         local[mask] = self.config.segmentation_labels_map[m]
                     subvolume[:,:,l] = local
-                # nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
+                nib.save(nib.Nifti1Image(subvolume, affine=np.eye(4)), os.path.join(self.resultpath + "predictions/",ID[j]+"_pred.nii.gz"))
                 subvolumes[count] = (subvolume, ID[j])
                 count += 1
         subvolumes_file = open(self.resultpath + "predictions.pkl", 'wb')
