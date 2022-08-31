@@ -54,6 +54,7 @@ def main():
 		model.fit_model()
 	else:
 		print("load parameter error, terminating program")
+		sys.exit()
 		return
 
 	model.evaluate_model_per_patient()
