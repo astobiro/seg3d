@@ -355,9 +355,8 @@ class Unet3Dmodel:
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
-                    prob_map = pred_mask[:,:,:,k]
+                    prob_map = pred_mask
                     mask = prob_map > 0.5
-                    print(pred_mask.shape)
                     subvolume[mask] = self.config.segmentation_labels_map[k]
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
