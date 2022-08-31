@@ -311,7 +311,7 @@ class Unet3Dmodel:
         datagen = self.test_gen
         # pred_gen = VolumeDataGenerator(validation_list_subvolumes, SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
         n_pred = len(datagen)
-
+        subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
         if not n_steps is None:
             n_pred = n_steps
 
@@ -351,13 +351,22 @@ class Unet3Dmodel:
                 # print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
+                subvolume = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2]), dtype=np.uint8)
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
+                    prob_map = pred_mask[:,:,:,k]
+                    mask = prob_map > 0.5
+                    print(pred_mask.shape)
+                    subvolume[mask] = self.config.segmentation_labels_map[k]
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
+                subvolumes.append(subvolume, ID[j])
                 count[indexer[raw_id]]+=1
+        subvolumes_file = open(self.resultpath + "predictions-test.pkl", 'wb')
+        pickle.dump(subvolumes, subvolumes_file)
+        subvolumes_file.close()
         # calculate the final metric
         average_metrics = {"IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0]}
         for i in range(len(pred_list)):
