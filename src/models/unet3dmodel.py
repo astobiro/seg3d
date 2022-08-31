@@ -311,7 +311,7 @@ class Unet3Dmodel:
         datagen = self.test_gen
         # pred_gen = VolumeDataGenerator(validation_list_subvolumes, SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
         n_pred = len(datagen)
-        subvolumes = [None]*len(datagen)*self.config.BATCH_SIZE
+        subvolumes = []#[None]*len(datagen)*self.config.BATCH_SIZE
         if not n_steps is None:
             n_pred = n_steps
 
@@ -361,7 +361,7 @@ class Unet3Dmodel:
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
-                subvolumes.append(subvolume, ID[j])
+                subvolumes.append((subvolume, ID[j]))
                 count[indexer[raw_id]]+=1
         subvolumes_file = open(self.resultpath + "predictions-test.pkl", 'wb')
         pickle.dump(subvolumes, subvolumes_file)
