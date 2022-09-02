@@ -352,13 +352,14 @@ class Unet3Dmodel:
                 # print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
-                subvolume = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2]), dtype=np.uint8)
+                subvolume = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2], pred.shape[3]), dtype=np.uint8)
+                subvolume = deepcopy(pred)
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
-                    prob_map = pred_mask
-                    mask = prob_map > 0.5
-                    subvolume = deepcopy(pred_mask)
+                    # prob_map = pred_mask
+                    # mask = prob_map > 0.5
+                    # subvolume = deepcopy(pred_mask)
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)

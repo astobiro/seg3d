@@ -45,13 +45,15 @@ def main():
 		print("=========== Starting training ===========")
 		model.fit_model()
 	elif load == 1:
-		print("=========== Loading weights ===========")
+		print("=========== Loading weights and saving masks ===========")
 		model.load_best_results()
 		model.save_masks()
 	elif load == 2:
 		print("=========== Loading weights and starting training ===========")
 		model.load_best_results()
 		model.fit_model()
+	elif load == 3:
+		print("=========== Loading weights ===========")
 	else:
 		print("load parameter error, terminating program")
 		sys.exit()
