@@ -367,7 +367,7 @@ class Unet3Dmodel:
                     dice = measureDICE(gt_mask, pred_mask)
                     ious[indexer[raw_id]][k] += deepcopy(iou)
                     dices[indexer[raw_id]][k] += deepcopy(dice)
-                subvolumes.append((subvolume, ID[j]))
+                # subvolumes.append((subvolume, ID[j]))
                 count[indexer[raw_id]]+=1
         # subvolumes_file = open(self.resultpath + "predictions-test.pkl", 'wb')
         # pickle.dump(subvolumes, subvolumes_file)
