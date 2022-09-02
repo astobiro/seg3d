@@ -49,6 +49,7 @@ from utils.loss_functions import focal_tversky_loss
 from utils.loss_functions import asym_unified_focal_loss
 from utils.loss_functions import asymmetric_focal_tversky_loss
 import utils.loss_functions as lf
+from copy import deepcopy
 
 class Unet3Dmodel:
     def __init__(self, config):
@@ -357,7 +358,7 @@ class Unet3Dmodel:
                     gt_mask = batchy[j,:,:,:,k] > 0.5
                     prob_map = pred_mask
                     mask = prob_map > 0.5
-                    subvolume = pred_mask
+                    subvolume = deepcopy(pred_mask)
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
