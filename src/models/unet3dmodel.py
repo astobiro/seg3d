@@ -76,7 +76,7 @@ class Unet3Dmodel:
 
     def save_identification(self):
         file = open(self.resultpath + self.config.IDENTIFICATION + ".txt", "w")
-        file.write("BATCH_SIZE: " + self.config.BATCH_SIZE)
+        file.write("BATCH_SIZE: " + str(self.config.BATCH_SIZE))
         file.write("LR: " + self.config.LR)
         file.write("EPOCHS: " + self.config.EPOCHS)
         file.write("INPUT_SHAPE: " + self.config.INPUT_SHAPE)
