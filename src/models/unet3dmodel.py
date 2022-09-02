@@ -65,6 +65,7 @@ class Unet3Dmodel:
         self.loss = self.lossInit(self.config.LOSS)
         self.callbacks = self.callbacksInit()
         self.train_gen, self.val_gen, self.test_gen = self.initGenerators()
+        save_identification()
         return
 
     def check_results_path(self):
@@ -138,7 +139,6 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
-        save_identification()
         self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
 
         return
