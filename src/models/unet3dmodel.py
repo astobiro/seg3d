@@ -116,7 +116,7 @@ class Unet3Dmodel:
             used_loss = lf.focal_loss()
         elif loss == "asym_focal":
             used_loss = lf.asymmetric_focal_loss()
-        elif loss == "tversy":
+        elif loss == "tversky":
             used_loss = lf.tversky_loss()
         return used_loss
 
