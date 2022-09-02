@@ -215,7 +215,7 @@ class Unet3Dmodel:
         decoderBlock32 = Activation("relu")(decoderBlock32)
         decoderBlock32 = Conv3D(32, 3, padding='same')(decoderBlock32)
         decoderBlock32 = Activation("relu")(decoderBlock32)
-        
+        # tensorflow.keras.layers.LeakyReLU()
         fcBlock = Conv3D(output_channels, 1, padding='same')(decoderBlock32)
         output_layer = Activation('softmax')(fcBlock)
         
@@ -389,7 +389,7 @@ class Unet3Dmodel:
                 average_metrics["RawIoU"][j] += float("{0:.4f}".format(rawious[indexer[pred_list[i]]][j]))
                 average_metrics["DICE"][j] += float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
                 average_metrics["RawDICE"][j] += float("{0:.4f}".format(rawdices[indexer[pred_list[i]]][j]))
-                average_metrics["count"][j] += float("{0:.4f}".format(count[indexer[pred_list[i]]][j]))
+                average_metrics["count"][j] += count[indexer[pred_list[i]]][j]
         for i in range(len(average_metrics["IoU"])):
             average_metrics["IoU"][i] = average_metrics["IoU"][i] / len(pred_list)
             average_metrics["DICE"][i] = average_metrics["DICE"][i] / len(pred_list)
