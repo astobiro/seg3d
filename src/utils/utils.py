@@ -62,6 +62,7 @@ def measureDICE(y_true, y_pred):
     y_pred    = K.reshape(y_pred,shape=(-1,4))
     print(y_true.shape)
     print(y_pred.shape)
+    sys.exit()
     err = 10e-9
     intersection = tf.reduce_sum(y_true * y_pred)
     dice_score = (2.0 * K.sum(intersection) + err) / (K.sum(y_true) + K.sum(y_pred) + err)
