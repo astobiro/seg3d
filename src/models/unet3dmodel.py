@@ -312,7 +312,7 @@ class Unet3Dmodel:
         datagen = self.test_gen
         # pred_gen = VolumeDataGenerator(validation_list_subvolumes, SUBVOLUMES_AXIAL_FOLDER, batch_size=batch_size, dim=target_dim, shuffle=False, verbose=0)
         n_pred = len(datagen)
-        subvolumes = []#[None]*len(datagen)*self.config.BATCH_SIZE
+        # subvolumes = []#[None]*len(datagen)*self.config.BATCH_SIZE
         if not n_steps is None:
             n_pred = n_steps
 
@@ -339,7 +339,9 @@ class Unet3Dmodel:
         # print("indexer:", indexer)
         # create dictionary to save values for each id
         ious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
+        rawious = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         dices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
+        rawdices = np.zeros((len(indexer), len(self.config.segmentation_name_map)))
         # calculate metrics per id
         count = np.zeros(len(indexer))
         for i in range(n_pred):
@@ -352,8 +354,8 @@ class Unet3Dmodel:
                 # print("ID", ID)
                 pred = predicted_vals[j]
                 pred_labels = np.argmax(pred, axis=3)
-                subvolume = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2], pred.shape[3]), dtype=np.uint8)
-                subvolume = deepcopy(pred)
+                # subvolume = np.zeros((pred.shape[0], pred.shape[1], pred.shape[2], pred.shape[3]), dtype=np.uint8)
+                # subvolume = deepcopy(pred)
                 for k in range(pred.shape[3]):
                     pred_mask = pred_labels == k
                     gt_mask = batchy[j,:,:,:,k] > 0.5
@@ -361,15 +363,19 @@ class Unet3Dmodel:
                     # mask = prob_map > 0.5
                     # subvolume = deepcopy(pred_mask)
                     # print(raw_id, indexer[raw_id])
-                    ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
-                    dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
+                    iou = measureIoU(gt_mask, pred_mask)
+                    dice = measureDICE(gt_mask, pred_mask)
+                    ious[indexer[raw_id]][k] += deepcopy(iou)
+                    dices[indexer[raw_id]][k] += deepcopy(dice)
                 subvolumes.append((subvolume, ID[j]))
                 count[indexer[raw_id]]+=1
-        subvolumes_file = open(self.resultpath + "predictions-test.pkl", 'wb')
-        pickle.dump(subvolumes, subvolumes_file)
-        subvolumes_file.close()
+        # subvolumes_file = open(self.resultpath + "predictions-test.pkl", 'wb')
+        # pickle.dump(subvolumes, subvolumes_file)
+        # subvolumes_file.close()
         # calculate the final metric
-        average_metrics = {"IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0]}
+        rawious = deepcopy(ious)
+        rawdices = deepcopy(dices)
+        average_metrics = {"IoU": [0,0,0,0,0,0], "DICE": [0,0,0,0,0,0], "RawIoU": [0,0,0,0,0,0], "RawDICE": [0,0,0,0,0,0], "count": [0,0,0,0,0,0]}
         for i in range(len(pred_list)):
             ious[indexer[pred_list[i]]] = ious[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
             dices[indexer[pred_list[i]]] = dices[indexer[pred_list[i]]] / count[indexer[pred_list[i]]]
@@ -380,19 +386,26 @@ class Unet3Dmodel:
                 this_dict.loc[pos, "IoU"] = float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
                 this_dict.loc[pos, "DICE"] = float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
                 average_metrics["IoU"][j] += float("{0:.4f}".format(ious[indexer[pred_list[i]]][j]))
+                average_metrics["RawIoU"][j] += float("{0:.4f}".format(rawious[indexer[pred_list[i]]][j]))
                 average_metrics["DICE"][j] += float("{0:.4f}".format(dices[indexer[pred_list[i]]][j]))
+                average_metrics["RawDICE"][j] += float("{0:.4f}".format(rawdices[indexer[pred_list[i]]][j]))
+                average_metrics["count"][j] += float("{0:.4f}".format(count[indexer[pred_list[i]]][j]))
         for i in range(len(average_metrics["IoU"])):
             average_metrics["IoU"][i] = average_metrics["IoU"][i] / len(pred_list)
             average_metrics["DICE"][i] = average_metrics["DICE"][i] / len(pred_list)
         
         this_dict.to_csv(self.resultpath + self.config.EVAL_DF + ".csv")
         
-        average_dict = {"IoU": [0], "DICE": [0]}
+        average_dict = {"IoU": [0], "DICE": [0], "RawIoU": [0], "RawDICE": [0], "count": [0]}
         average_starting = self.config.segmentation_name_map
         average_dict = pd.DataFrame(average_dict, index=average_starting)
         for i in range(len(average_metrics["IoU"])):
             average_dict.loc[self.config.segmentation_name_map[i], "IoU"] = float("{0:.4f}".format(average_metrics["IoU"][i]))
             average_dict.loc[self.config.segmentation_name_map[i], "DICE"] = float("{0:.4f}".format(average_metrics["DICE"][i]))
+            average_dict.loc[self.config.segmentation_name_map[i], "RawIoU"] = float("{0:.4f}".format(average_metrics["RawIoU"][i]))
+            average_dict.loc[self.config.segmentation_name_map[i], "RawDICE"] = float("{0:.4f}".format(average_metrics["RawDICE"][i]))
+            average_dict.loc[self.config.segmentation_name_map[i], "count"] = float("{0:.4f}".format(average_metrics["count"][i]))
+
 
         average_dict.to_csv(self.resultpath + self.config.EVAL_DF + "-average.csv")
         print("Metrics saved to files.")
