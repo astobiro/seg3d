@@ -70,7 +70,6 @@ class Unet3Dmodel:
         resultpath = "data/results/" + self.config.TESTNO + "/"
         if not os.path.exists(resultpath):
             os.mkdir(resultpath)
-        save_identification()
         return resultpath
 
     def save_identification(self):
@@ -138,6 +137,7 @@ class Unet3Dmodel:
         return train_gen, val_gen, test_gen
 
     def define_model(self):
+        save_identification()
         self.model.compile(optimizer=self.optim, loss=self.loss, metrics=self.metrics) 
 
         return
