@@ -119,6 +119,8 @@ class Unet3Dmodel:
             used_loss = lf.asymmetric_focal_loss()
         elif loss == "tversky":
             used_loss = lf.tversky_loss()
+        elif loss == "combo":
+            used_loss = lf.combo_loss()
         return used_loss
 
     def initGenerators(self):
