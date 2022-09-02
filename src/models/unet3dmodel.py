@@ -58,7 +58,7 @@ class Unet3Dmodel:
         self.resultpath = self.check_results_path()
         # self.dataset = dataset
         self.metrics = [measureDICE]
-        self.optim = Adam(self.config.LR)
+        self.optim = self.optimInit()
         # self.preprocess_input = self.preprocess_inputInit()
         self.model = self.modelInit()
         self.loss = self.lossInit(self.config.LOSS)
@@ -70,7 +70,24 @@ class Unet3Dmodel:
         resultpath = "data/results/" + self.config.TESTNO + "/"
         if not os.path.exists(resultpath):
             os.mkdir(resultpath)
+        save_identification()
         return resultpath
+
+    def save_identification(self):
+        file = open(resultpath + self.config.IDENTIFICATION + ".txt", "r")
+        file.write("BATCH_SIZE: " + self.config.BATCH_SIZE)
+        file.write("LR: " + self.config.LR)
+        file.write("EPOCHS: " + self.config.EPOCHS)
+        file.write("INPUT_SHAPE: " + self.config.INPUT_SHAPE)
+        file.write("TARGET_DIM: " + self.config.TARGET_DIM)
+        file.write("LOSS: " + self.config.LOSS)
+        file.write("OPTIMIZER: " + self.config.OPTIMIZER)
+        file.close()
+        return
+
+    def optimInit(self):
+        if self.config.OPTIMIZER == "Adam":
+            return Adam(self.config.LR)
 
     def modelInit(self):
         input_shape = tuple(self.config.INPUT_SHAPE)
@@ -99,6 +116,8 @@ class Unet3Dmodel:
             used_loss = lf.focal_loss()
         elif loss == "asym_focal":
             used_loss = lf.asymmetric_focal_loss()
+        elif loss == "tversy":
+            used_loss = lf.tversky_loss()
         return used_loss
 
     def initGenerators(self):
@@ -170,51 +189,51 @@ class Unet3Dmodel:
         input_layer = Input(shape=input_shape, name='the_input_layer')
         
         encoderBlock32 = Conv3D(32, 3, padding='same')(input_layer)
-        encoderBlock32 = Activation("relu")(encoderBlock32)
+        encoderBlock32 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock32)
         encoderBlock32 = Conv3D(32, 3, padding='same')(encoderBlock32)
-        encoderBlock32 = Activation("relu")(encoderBlock32)
+        encoderBlock32 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock32)
         
         encoderBlock64 = MaxPool3D(pool_size=(2, 2, 2))(encoderBlock32)
         encoderBlock64 = Conv3D(64, 3, padding='same')(encoderBlock64)
-        encoderBlock64 = Activation("relu")(encoderBlock64)
+        encoderBlock64 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock64)
         encoderBlock64 = Conv3D(64, 3, padding='same')(encoderBlock64)
-        encoderBlock64 = Activation("relu")(encoderBlock64)
+        encoderBlock64 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock64)
         
         encoderBlock128 = MaxPool3D(pool_size=(2, 2, 2))(encoderBlock64)
         encoderBlock128 = Conv3D(128, 3, padding='same')(encoderBlock128)
-        encoderBlock128 = Activation("relu")(encoderBlock128)
+        encoderBlock128 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock128)
         encoderBlock128 = Conv3D(128, 3, padding='same')(encoderBlock128)
-        encoderBlock128 = Activation("relu")(encoderBlock128)
+        encoderBlock128 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock128)
         
         encoderBlock256 = MaxPool3D(pool_size=(2, 2, 2))(encoderBlock128)
         encoderBlock256 = Conv3D(256, 3, padding='same')(encoderBlock256)
-        encoderBlock256 = Activation("relu")(encoderBlock256)
+        encoderBlock256 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock256)
         encoderBlock256 = Conv3D(256, 3, padding='same')(encoderBlock256)
-        encoderBlock256 = Activation("relu")(encoderBlock256)
+        encoderBlock256 = Activation(tensorflow.keras.layers.LeakyReLU())(encoderBlock256)
         
         decoderBlock128 = UpSampling3D(size=(2, 2, 2))(encoderBlock256)
         decoderBlock128 = Conv3D(128, 2, padding='same')(decoderBlock128)
         decoderMerge128 = concatenate([encoderBlock128,decoderBlock128]) #axis = -1
         decoderBlock128 = Conv3D(128, 3, padding='same')(decoderMerge128)
-        decoderBlock128 = Activation("relu")(decoderBlock128)
+        decoderBlock128 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock128)
         decoderBlock128 = Conv3D(128, 3, padding='same')(decoderBlock128)
-        decoderBlock128 = Activation("relu")(decoderBlock128)
+        decoderBlock128 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock128)
         
         decoderBlock64 = UpSampling3D(size=(2, 2, 2))(decoderBlock128)
         decoderBlock64 = Conv3D(64, 2, padding='same')(decoderBlock64)
         decoderMerge64 = concatenate([encoderBlock64,decoderBlock64]) #axis = -1
         decoderBlock64 = Conv3D(64, 3, padding='same')(decoderMerge64)
-        decoderBlock64 = Activation("relu")(decoderBlock64)
+        decoderBlock64 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock64)
         decoderBlock64 = Conv3D(64, 3, padding='same')(decoderBlock64)
-        decoderBlock64 = Activation("relu")(decoderBlock64)
+        decoderBlock64 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock64)
         
         decoderBlock32 = UpSampling3D(size=(2, 2, 2))(decoderBlock64)
         decoderBlock32 = Conv3D(32, 2, padding='same')(decoderBlock32)
         decoderMerge32 = concatenate([encoderBlock32,decoderBlock32]) #axis = -1
         decoderBlock32 = Conv3D(32, 3, padding='same')(decoderMerge32)
-        decoderBlock32 = Activation("relu")(decoderBlock32)
+        decoderBlock32 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock32)
         decoderBlock32 = Conv3D(32, 3, padding='same')(decoderBlock32)
-        decoderBlock32 = Activation("relu")(decoderBlock32)
+        decoderBlock32 = Activation(tensorflow.keras.layers.LeakyReLU())(decoderBlock32)
         # tensorflow.keras.layers.LeakyReLU()
         fcBlock = Conv3D(output_channels, 1, padding='same')(decoderBlock32)
         output_layer = Activation('softmax')(fcBlock)

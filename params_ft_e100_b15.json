@@ -1,13 +1,11 @@
 {
 	"BATCH_SIZE" : 15,
-	"LR" :  0.0001,
+	"LR" :  0.000001,
 	"EPOCHS" : 100,
 	"INPUT_SHAPE": [160,160,16,1],
 	"TARGET_DIM" : [160,160,16],
-	"LOSS" : "tversky",
-	"OPTIMIZER": "Adam",
-	"TESTNO" : "LeakyReLU test-001",
-	"IDENTIFICATION" : "40_random_tversky_loss-epoch100-batch-15-softmax-LeakyReLUtest",
+	"LOSS" : "focal_tversky",
+	"TESTNO" : "40random_focal_tversky_loss-epoch100-batch-15-softmax",
 
 	"TRAINING_LIST_FILENAME" : "data/axial_40_random_subvolumes/training.csv",
 	"VALIDATION_LIST_FILENAME" : "data/axial_40_random_subvolumes/validation.csv",
