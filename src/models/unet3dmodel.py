@@ -357,7 +357,7 @@ class Unet3Dmodel:
                     gt_mask = batchy[j,:,:,:,k] > 0.5
                     prob_map = pred_mask
                     mask = prob_map > 0.5
-                    subvolume[mask] = self.config.segmentation_labels_map[k]
+                    subvolume[mask] = pred_mask
                     # print(raw_id, indexer[raw_id])
                     ious[indexer[raw_id]][k] += measureIoU(gt_mask, pred_mask)
                     dices[indexer[raw_id]][k] += measureDICE(gt_mask, pred_mask)
