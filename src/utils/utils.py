@@ -60,6 +60,8 @@ def custom_loss(y_true, y_pred):
 def measureDICE(y_true, y_pred):
     y_true    = K.reshape(y_true,shape=(-1,4))
     y_pred    = K.reshape(y_pred,shape=(-1,4))
+    print(y_true.shape)
+    print(y_pred.shape)
     err = 10e-9
     intersection = tf.reduce_sum(y_true * y_pred)
     dice_score = (2.0 * K.sum(intersection) + err) / (K.sum(y_true) + K.sum(y_pred) + err)
