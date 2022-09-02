@@ -77,12 +77,12 @@ class Unet3Dmodel:
     def save_identification(self):
         file = open(self.resultpath + self.config.IDENTIFICATION + ".txt", "w")
         file.write("BATCH_SIZE: " + str(self.config.BATCH_SIZE))
-        file.write("LR: " + self.config.LR)
-        file.write("EPOCHS: " + self.config.EPOCHS)
-        file.write("INPUT_SHAPE: " + self.config.INPUT_SHAPE)
-        file.write("TARGET_DIM: " + self.config.TARGET_DIM)
-        file.write("LOSS: " + self.config.LOSS)
-        file.write("OPTIMIZER: " + self.config.OPTIMIZER)
+        file.write("LR: " + str(self.config.LR))
+        file.write("EPOCHS: " + str(self.config.EPOCHS))
+        file.write("INPUT_SHAPE: " + str(self.config.INPUT_SHAPE))
+        file.write("TARGET_DIM: " + str(self.config.TARGET_DIM))
+        file.write("LOSS: " + str(self.config.LOSS))
+        file.write("OPTIMIZER: " + str(self.config.OPTIMIZER))
         file.close()
         return
 
